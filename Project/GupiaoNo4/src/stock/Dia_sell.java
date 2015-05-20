@@ -1,4 +1,8 @@
 package stock;
+import java.text.DecimalFormat;
+
+import javax.swing.JOptionPane;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -7,10 +11,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Composite;
+
+import stocker.PlaceOder;
 
 
 public class Dia_sell {
@@ -22,22 +30,37 @@ public class Dia_sell {
 	private Text text_3;
 	private Text text_4;
 	private Text text_6;
-	private Text text_sharecode;
-	private Text text_8;
-	private Text text_9;
-	private Text text_10;
-	private Text text_price;
-	private Text text_number;
+	
+	public static Text text_sharecode;//股票代码
+	public static Text text_8; //涨停价格
+	public static Text text_9;//跌停价格
+	public static Text text_10;//可卖数量
+	public static Text text_price;//委托价格
+	public  static Text text_number;//委托数量
+	
 	private Button btnNewButton;
 	private Button btnNewButton_1;
+	public static String[] information_sell;
+	public static String place;
+	
+	public Dia_sell(String[] information, String place) {
+		// TODO Auto-generated constructor stub	
+		this.information_sell = information;
+		this.place =place;
+	}
+
 	/**
 	 * Launch the application.
 	 * @param args
+	 * @return 
 	 */
+
 	
 //	public static void main(String[] args) {
+//		String[] s1 = null;
+//		String s2 =null;
 //		try {
-//			Dia_sell window = new Dia_sell();
+//			Dia_sell window = new Dia_sell(s1,s2);
 //			window.open();
 //		} catch (Exception e) {
 //			e.printStackTrace();
@@ -115,29 +138,33 @@ public class Dia_sell {
 		text_number = new Text(shell, SWT.BORDER);
 		text_number.setBounds(241, 203, 73, 23);
 		
+		text_price.addTraverseListener(new TraverseListener() {
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == 16777296 |e.keyCode == 13) {
+					// e.detail = SWT.TRAVERSE_TAB_NEXT;
+					e.doit = true;
+					paceoder();
+				}
+			}
+		});
+		
+		text_number.addTraverseListener(new TraverseListener() {
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == 16777296 |e.keyCode == 13) {
+					// e.detail = SWT.TRAVERSE_TAB_NEXT;
+					e.doit = true;
+					paceoder();
+				}
+			}
+		});
 		
 		//下单，取消按钮
 		btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				MessageBox messagebox = new MessageBox(shell, SWT.YES | SWT.NO);
-                messagebox.setText("下单");
-                messagebox.setMessage("          确认是否下单");
-              
-               int val=messagebox.open();
-                if(val == SWT.YES)
-                {
-                	if((text_number.getText().isEmpty())|(text_price.getText().isEmpty())
-                			|(text_sharecode.getText().isEmpty())){
-        			Messagedialofail window2 = new Messagedialofail();
-            			window2.open();
-                	}
-                	else{
-                		Messagedialo window = new Messagedialo();
-                		window.open();
-                	}
-                }
+				paceoder();
+                
 			}
 		});
 		btnNewButton.setBounds(99, 267, 80, 27);
@@ -146,12 +173,66 @@ public class Dia_sell {
 		btnNewButton_1 = new Button(shell, SWT.NONE);
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) {
+			public void mouseDown(MouseEvent e1) {
 				shell.dispose();
 			}
 		});
 		btnNewButton_1.setBounds(267, 267, 80, 27);
 		btnNewButton_1.setText("\u53D6\u6D88");
 
+		trade_sell();//显示文本框内容
+	}
+
+	protected void paceoder() {
+		// TODO Auto-generated method stub
+		if(!homepage.isimport){
+			JOptionPane.showMessageDialog(null, "先导入用户数据吧");
+		}else if((text_number.getText().isEmpty())|(text_price.getText().isEmpty())){
+    			
+    		JOptionPane.showMessageDialog(null, "先输入数值喔");
+    	}
+    	else if(!Userinfochange.isNumeric(text_number.getText())
+    			|!Userinfochange.isNumeric(text_price.getText())){
+    		
+    		JOptionPane.showMessageDialog(null, "输入数字喔");
+    	}
+    	else if( Integer.parseInt(Dia_sell.text_number.getText())<0
+    			||Integer.parseInt(Dia_sell.text_number.getText())%100!=0){
+				JOptionPane.showMessageDialog(null, "要输入整百股喔");
+				
+			}
+    	      //可卖数量不足
+    		else if(Integer.parseInt(Dia_sell.text_number.getText())>Integer.parseInt(Dia_sell.text_10.getText())){
+    			JOptionPane.showMessageDialog(null, "可卖数量不足喔");
+    		}
+    		else{	
+    			MessageBox messagebox = new MessageBox(shell, SWT.YES | SWT.NO);
+    			messagebox.setText("下单");
+    			messagebox.setMessage("          确认是否下单");
+  
+    			int val=messagebox.open();
+    			
+    			if(val == SWT.YES){
+                
+    			PlaceOder placeoder = new PlaceOder();
+    			placeoder.update_sell();
+    		
+    			Messagedialo window = new Messagedialo();
+    			window.open(shell);}
+    		
+    	
+    }
+	}
+
+	private void trade_sell() {
+		// TODO Auto-generated method stub
+		text_sharecode.setText(Dia_info.getcode());
+		DecimalFormat df=new DecimalFormat("#.00");
+		text_8.setText(df.format(Double.parseDouble(information_sell[2])*1.1));//涨停价
+		
+		text_9.setText(df.format(Double.parseDouble(information_sell[2])*0.9));//跌停价
+		
+		
+		text_10.setText(homepage.table_chicang.getItem(homepage.tableindex).getText(5) );//可卖数量
 	}
 }

@@ -2,6 +2,8 @@ package stock;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Region;
@@ -9,20 +11,24 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Label;
 
-import stocker.StockMain;
-import datadealer.Trade;
-import datadealer.DataBuilder;
+import stocker.DataBuilder;
+import stocker.PlaceOder;
+import stocker.Stockown;
+import stocker.Trade;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.swing.JOptionPane;
 
 import jxl.read.biff.BiffException;
 import jxl.write.WriteException;
@@ -44,7 +50,8 @@ public class Dia_buy  {
 	private Label label_2;
 	private Label label_3;
 	private Label label_4;
-	private String[] information;
+	public static String[] information;
+	public static String place;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -60,9 +67,10 @@ public class Dia_buy  {
 	
 	
 	
-	public Dia_buy(String[] information1) {
+	public Dia_buy(String[] information,String place) {
 		// TODO Auto-generated constructor stub
-		this.information = information1;
+		this.information = information;
+		this.place =place;
 	}
 
 	public static Text getstockcode() {
@@ -144,33 +152,37 @@ public class Dia_buy  {
 		text_num = new Text(shell, SWT.BORDER);
 		text_num.setBounds(169, 214, 73, 23);
 		
-		//下单以及取消按钮
+		
+		text_price.addTraverseListener(new TraverseListener() {
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == 16777296 |e.keyCode == 13) {
+					// e.detail = SWT.TRAVERSE_TAB_NEXT;
+					e.doit = true;
+					paceoder();
+				}
+			}
+		});
+		
+		text_num.addTraverseListener(new TraverseListener() {
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == 16777296 |e.keyCode == 13) {
+					// e.detail = SWT.TRAVERSE_TAB_NEXT;
+					e.doit = true;
+					paceoder();
+				}
+			}
+		});
+
+		//下单以按钮
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				MessageBox messagebox = new MessageBox(shell, SWT.YES | SWT.NO);
-                messagebox.setText("下单");
-                messagebox.setMessage("          确认是否下单");
+		
               
-               int val=messagebox.open();
-                if(val == SWT.YES)
-                {
-                	if((text_code.getText().isEmpty())|(text_num.getText().isEmpty())|(text_price.getText().isEmpty())
-                			|(text_upprice.getText().isEmpty())){
-               
-                		Messagedialofail window2 = new Messagedialofail();
-            			window2.open();
-                	}
-                	else{
-                		update_buy();
-                		Messagedialo window = new Messagedialo();
-                		window.open();
-                	}
-                }
+                
+				paceoder();
 			}
-
-
 		});
 		btnNewButton.setBounds(83, 276, 80, 27);
 		btnNewButton.setText("\u4E0B\u5355");
@@ -224,8 +236,44 @@ public class Dia_buy  {
 	}
 
 
+	protected void paceoder() {
+		// TODO Auto-generated method stub
+		if(!homepage.isimport){
+			JOptionPane.showMessageDialog(null, "先导入用户数据吧");
+		}else if ( (text_num.getText().isEmpty())|| (text_price.getText().isEmpty())) {
+			
+			JOptionPane.showMessageDialog(null, "亲，总要输点东西吧");
+			
+		} else if(!Userinfochange.isNumeric(text_num.getText())
+    			|!Userinfochange.isNumeric(text_price.getText())){
+    		
+    		JOptionPane.showMessageDialog(null, "输入数字喔");
+    	}
+		else if(Integer.parseInt(text_num.getText())>Integer.parseInt(text_limitnum.getText())){
+			JOptionPane.showMessageDialog(null, "委托数量不能高于可买数量");
+		}
+		else if (Integer.parseInt(Dia_buy.getnum().getText())<100 ||Integer.parseInt(Dia_buy.getnum().getText()) % 100 != 0) {
+				JOptionPane.showMessageDialog(null, "要输入整百股喔");
 
+			} else {
+				MessageBox messagebox = new MessageBox(shell, SWT.YES
+						| SWT.NO);
+				messagebox.setText("下单");
+				messagebox.setMessage("          确认是否下单");
 
+				int val = messagebox.open();
+
+				
+				if (val == SWT.YES) {
+					
+					PlaceOder placeoder = new PlaceOder();
+					placeoder.update_buy();
+					Messagedialo window = new Messagedialo();
+					window.open(shell);
+				}
+			}
+		}
+	
 	
 
 	private void trade_buy() {
@@ -243,72 +291,10 @@ public class Dia_buy  {
 		double d2 = Double.parseDouble(information[3]);
 		getlimitnum().setText(Integer.toString( (int)(d1/d2) )  );//可买数量
 		
-		
-		
-		
+
 	}
 	
-	protected void update_buy() {
-		// TODO Auto-generated method stub
-		userinfochange_buy();// 买入后用户信息改变
-		
-		Trade trade_buy = new Trade();
-		trade_buy = newtrade();
-		
-		// 买入后增加一条新的交易记录
-		try {
-			DataBuilder.addtrade(homepage.get_path_trade(), trade_buy);
-		} catch (RowsExceededException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (WriteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (BiffException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		StockMain.addStock();
-	}
-
-	private Trade newtrade() {
-		// TODO Auto-generated method stub
-		Trade trade_buy = new Trade();
-		
-		trade_buy.set_name(information[0]);
-		trade_buy.set_code(getstockcode().getText());
-		
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-        String date = df.format(new Date());
-        
-		trade_buy.set_date(date);
-		trade_buy.set_trade_stytle("买入");
-		trade_buy.set_price(Double.parseDouble(getprice().getText()));
-		trade_buy.set_num(Integer.parseInt(getnum().getText()));
-		return trade_buy;
-	}
-
-	private void userinfochange_buy() {
-		// TODO Auto-generated method stub
-		
-		double d1 = Double.parseDouble(
-				homepage.get_table_userinfo().getItem(1).getText(1));//获得table表的可用资金
-		
-		double d2 = Double.parseDouble(getprice().getText());//委托价格
-		double d3 = Double.parseDouble(getnum().getText());//委托数量
-		
-		//修改可用资金
-		homepage.get_table_userinfo().getItem(1).setText(1, Double.toString(d1-d2*d3));
-		
-		int d4= Integer.parseInt(
-				homepage.get_table_userinfo().getItem(1).getText(3));//获得持有股票数
-		//修改股票数
-		homepage.get_table_userinfo().getItem(1).setText(3, Integer.toString(d4+(int)d3));
-	}
+	
 	
 
 

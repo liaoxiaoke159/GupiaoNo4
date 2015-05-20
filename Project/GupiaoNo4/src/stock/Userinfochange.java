@@ -4,6 +4,8 @@ package stock;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
@@ -19,26 +21,36 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 
-import datadealer.DataBuilder;
+import stocker.DataBuilder;
+import stocker.Importer;
 
 public class Userinfochange {
 
 	protected Shell shell;
 	private Text text_fund;
 
-
+  //判断字符串是否为数字
+	public static boolean isNumeric(String str) {
+		for (int i = str.length(); --i >= 0;) {
+			if (!Character.isDigit(str.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-//	public static void main(String[] args) {
-//		try {
-//			Userinfochange window = new Userinfochange();
-//			window.open();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public static void main(String[] args) {
+		try {
+			Userinfochange window = new Userinfochange();
+			window.open();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Open the window.
@@ -78,17 +90,22 @@ public class Userinfochange {
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if(text_fund.getText()==""){
-					MessageBox messagebox = new MessageBox(shell, SWT.OK);
-		            messagebox.setText("额..");
-		            messagebox.setMessage("你不输入数字我怎么帮你改资金");
-		            int val = messagebox.open();
+				if(text_fund.getText()=="" || !isNumeric(text_fund.getText())){
+					JOptionPane.showMessageDialog(null, "请输入正确数值", "异常", JOptionPane.ERROR_MESSAGE);
 				}
 				else{
 					//修改值大于初始资金才允许修改
 					if(Double.parseDouble(text_fund.getText()) >=
 							Double.parseDouble( homepage.get_table_userinfo().getItem(1).getText(0))){
+						
+						double fundown = Double.parseDouble(homepage.get_table_userinfo().getItem(1).getText(1));//获得可用资金
+						double fund =Double.parseDouble(homepage.get_table_userinfo().getItem(1).getText(0));//获得初始资金
+						double newfundown = fundown + ( Double.parseDouble(text_fund.getText())-fund);//重新计算 可用资金 = 原来可用资金+（输入的初始资金-原来的初始资金）
+						
+						homepage.table_userinfo.getItem(1).setText(1, Double.toString(newfundown));
 						homepage.get_table_userinfo().getItem(1).setText(0, text_fund.getText());
+						
+						Importer.userinfo_table_change(homepage.table_userinfo,homepage.stkl.stockslist);
 					
 						shell.close();
 					}
@@ -104,11 +121,14 @@ public class Userinfochange {
 				}
 				
 				
-				
 			}
+
+			
+			
+			
 		});
-		btnNewButton.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\0a22e1a12280511a491f8376f6551c3c.png"));
-		btnNewButton.setBounds(398, 3, 30, 30);
+		btnNewButton.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\asggh.png"));
+		btnNewButton.setBounds(398, 3, 30,30 );
 
 	}
 }

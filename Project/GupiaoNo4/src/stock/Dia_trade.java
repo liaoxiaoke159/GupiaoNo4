@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
-import datadealer.DataBuilder;
+import stocker.DataBuilder;
 
 
 public class Dia_trade {

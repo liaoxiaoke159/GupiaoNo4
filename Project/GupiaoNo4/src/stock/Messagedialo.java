@@ -14,6 +14,7 @@ public class Messagedialo {
 
 	protected Shell shell;
 	private Label label;
+	private Shell shell1;
 
 	/**
 	 * Launch the application.
@@ -30,8 +31,10 @@ public class Messagedialo {
 
 	/**
 	 * Open the window.
+	 * @param shell2 
 	 */
-	public void open() {
+	public void open(Shell shell1) {
+		this.shell1 = shell1;
 		Display display = Display.getDefault();
 		createContents();
 		shell.open();
@@ -58,6 +61,7 @@ public class Messagedialo {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				shell.dispose(); 
+				shell1.dispose();
 			}
 		});
 		button.setBounds(135, 126, 58, 33);

@@ -33,14 +33,14 @@ public class Dia_shortsell {
 	 * Launch the application.
 	 * @param args
 	 */
-//	public static void main(String[] args) {
-//		try {
-//			Dia_shortsell window = new Dia_shortsell();
-//			window.open();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public static void main(String[] args) {
+		try {
+			Dia_shortsell window = new Dia_shortsell();
+			window.open();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Open the window.
@@ -96,7 +96,6 @@ public class Dia_shortsell {
 		text_6.setBounds(116, 236, 57, 23);
 		
 		text_sharecode = new Text(shell, SWT.BORDER);
-		text_sharecode.setText("102648567");
 		text_sharecode.setBounds(237, 62, 73, 23);
 		
 		text_8 = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
@@ -136,11 +135,11 @@ public class Dia_shortsell {
                 			|(text_sharecode.getText().isEmpty())){
                 	
         			Messagedialofail window2 = new Messagedialofail();
-            			window2.open();
+            			window2.open(shell);
                 	}
                 	else{
                 		Messagedialo window = new Messagedialo();
-        			    window.open();
+        			    window.open(shell);
                 	}
                 }
 			}

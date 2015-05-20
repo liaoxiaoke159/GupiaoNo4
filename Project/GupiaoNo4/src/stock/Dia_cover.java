@@ -136,11 +136,11 @@ public class Dia_cover {
                 			|(text_sharecode.getText().isEmpty())){
                 	
         			Messagedialofail window2 = new Messagedialofail();
-            			window2.open();
+            			window2.open(shell);
                 	}
                 	else{
                 		Messagedialo window = new Messagedialo();
-        			    window.open();
+        			    window.open(shell);
                 	}
                 }
 			}

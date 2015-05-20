@@ -1,23 +1,43 @@
 package stocker;
 
+
 public class Stocks {
+	private String name;
 	private String code;
 	private String place;
-	private String name;
-	private double price;//当前价
 	private int num;//持有量
-	private double sumprice;//持有市值
-	public String getcode(){
-		return this.code;
+	private double costprice ;//成本
+	public Stocks(String name,String code,String num)
+	{
+		this.name=name;
+		this.code=code;
+		this.num=Integer.parseInt(num);
 	}
-	public String getname(){
+
+	public String getSocketname(){
 		return this.name;
 	}
-	public Stocks(String code,String name,String place,int num){
-		this.code=code;
-		this.place=place;
-		this.name=name;
-		this.num=num;
+	public String getSocketcode(){
+		return this.code;
 	}
+	public void setNum(int x){
+		this.num=x;
+	}
+	public int getNum(){
+		return this.num;
+	}
+	public void setcostprice(double x){
+		this.costprice=x;
+	}
+	public double getcostprice(){
+		return this.costprice;
+	}
+	public void setplace(String place1){
+		this.place = place1;
+	}
+	public String getplace(){
+		return this.place;
+	}
+
 
 }

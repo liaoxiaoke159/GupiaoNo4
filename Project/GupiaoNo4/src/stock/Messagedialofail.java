@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 public class Messagedialofail {
 
 	protected Shell shell;
+	protected Shell shell1;
 	private Label lblNewLabel;
 	private Label lblNewLabel_1;
 	/**
@@ -31,8 +32,10 @@ public class Messagedialofail {
 
 	/**
 	 * Open the window.
+	 * @param shell2 
 	 */
-	public void open() {
+	public void open(Shell shell2) {
+		this.shell1 = shell2;
 		Display display = Display.getDefault();
 		createContents();
 		shell.open();
@@ -59,6 +62,7 @@ public class Messagedialofail {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				shell.dispose();
+				shell1.dispose();
 			}
 		});
 		button.setBounds(138, 126, 55, 27);

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -28,7 +29,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 
-import datadealer.DataBuilder;
+import stocker.DataBuilder;
 
 
 
@@ -38,29 +39,31 @@ public class Dia_info {
 	
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private static String code;//代码				
-	private String place;//交易所 sh sz
+	public String place;//交易所 sh sz
 	private String path=new String("C:\\Users\\Administrator\\Desktop\\搜索包");//保存的路径
 	private String spath;
 	public String[] information=new String[31];
+	private int i;
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-	public Dia_info(String place ,String code){
+	public Dia_info(String place ,String code,int i){
 		this.place=place;
 		this.code=code;
+		this.i=i;
 		this.spath=code+".jpg";
+		
+		System.out.println(this.place+" "+this.code+"(Dia_fo 57)");
+		System.out.println();
+		
 		try {
 			
 			information=Internet.share.Internet.getSharedata(place, code);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-//			MessageBox messagebox = new MessageBox(shell, SWT.OK);
-//            messagebox.setText("异常");
-//            messagebox.setMessage("别瞎鸡巴打，你看，错了吧，傻逼了吧，呵呵了，就这智商，别他吗炒股了");
-//          
-			System.out.println("hasdf");
-          // int val=messagebox.open();
+			JOptionPane.showMessageDialog(null, "请检查网络", "异常", JOptionPane.ERROR_MESSAGE);
+		    
 		}
 	}
 	
@@ -76,16 +79,16 @@ public class Dia_info {
 		
 	}
 	
-	public static void main(String[] args) {
-		String place="sz";
-		String code="000025";
-		try {
-			Dia_info window = new Dia_info(place,code);
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-   }
+//	public static void main(String[] args) {
+//		String place="sz";
+//		String code="000025";
+//		try {
+//			Dia_info window = new Dia_info(place,code,1);
+//			window.open();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//   }
 
 	
 	/**
@@ -111,19 +114,7 @@ public class Dia_info {
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
-//		shell.addShellListener(new ShellAdapter() {
-//			@Override
-//			public void shellActivated(ShellEvent e) {
-//				try {
-//					System.out.println("1122121");
-//					
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//			}
-//
-//		});
+
 		shell.setSize(585, 514);
 		shell.setText("\u80A1\u7968\u4FE1\u606F");
 		
@@ -132,6 +123,11 @@ public class Dia_info {
 		
 		String name=information[0];
 		String[] names=new String[2];
+		System.out.println("搜索出的股票名:"+name+"(Dia_info 126)");
+		if(name==null){
+			
+			return;
+		}
 		names=name.split("\"");
 		name=names[1];
 			
@@ -149,9 +145,17 @@ public class Dia_info {
 		Button btn_trade = new Button(shell, SWT.NONE);
 		btn_trade.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseDown(MouseEvent e) {
-				Dia_buy window = new Dia_buy(information);
+			public void mouseDown(MouseEvent e) {	
+				
+				if(i==0){
+					Dia_buy window = new Dia_buy(information,place);
 				window.open();
+				}
+				else{
+					Dia_sell window = new Dia_sell(information,place);
+					window.open();
+				}
+				
 			}
 		});
 		btn_trade.setBounds(113, 5, 80, 27);
