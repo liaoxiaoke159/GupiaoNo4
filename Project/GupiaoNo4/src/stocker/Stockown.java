@@ -22,34 +22,35 @@ public class Stockown {
 		return;
 	}
 
-	public  void addStock(Trade trade_buy) {
+	public  void addStock(Trade trade) {
 		// TODO Auto-generated method stub
 
-		
 		for(int i=0;i<stockslist.size();i++){
 			String codestr = stockslist.get(i).getSocketcode();
 			String placestr = stockslist.get(i).getplace();
 			double costpricestr = stockslist.get(i).getcostprice();
-			if(codestr.equals(trade_buy.get_code())
-					&&placestr.equals(trade_buy.get_place())
-					&&costpricestr==trade_buy.get_price()) {
+			if(codestr.equals(trade.get_code())
+					&&placestr.equals(trade.get_place())
+					&&costpricestr==trade.get_price()) {
 				
 				
-				stockslist.get(i).setNum(stockslist.get(i).getNum()+trade_buy.get_num());
+				stockslist.get(i).setNum(stockslist.get(i).getNum()+trade.get_num());
+				
+				if(stockslist.get(i).getNum()==0){
+					stockslist.remove(stockslist.get(i));
+				}
 				
 				return;
 			}
 			
 		}
-		
-		Stocks stocks = new Stocks(trade_buy.get_name(), trade_buy.get_code(),
-				Integer.toString(trade_buy.get_num()));// 股票名称 代码 买入量 
+		Stocks stocks = new Stocks(trade.get_name(), trade.get_code(),
+				Integer.toString(trade.get_num()));// 股票名称 代码 买入量 
 
-		stocks.setplace(trade_buy.get_place());//交易所
-		stocks.setcostprice(trade_buy.get_price());//成本价
+		stocks.setplace(trade.get_place());//交易所
+		stocks.setcostprice(trade.get_price());//成本价
 		
 		this.stockslist.add(stocks);
-		
 	}
 
 	
@@ -69,6 +70,7 @@ public class Stockown {
 	    	 String name = oFirstSheet.getCell(0, i).getContents();
 	    	 String code = oFirstSheet.getCell(1, i).getContents();
 	    	 String num = oFirstSheet.getCell(5, i).getContents();
+	    	 if(num.equals("0")){continue;}
 	    	 String place = oFirstSheet.getCell(2, i).getContents();
 	    	 String costprce = oFirstSheet.getCell(7, i).getContents();
 	    	 Stocks temp=new Stocks(name,code,num);

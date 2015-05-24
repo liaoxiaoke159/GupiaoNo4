@@ -18,12 +18,19 @@ import org.eclipse.swt.events.SelectionEvent;
 
 import stocker.DataBuilder;
 
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+
 
 public class Dia_trade {
 
 	protected Shell shlSw;
-	private Table table_trade;
+	public static Table table_trade;
 	private String path_file=homepage.get_path_trade();
+	protected int row;
+	protected int column;
 
 	/**
 	 * Launch the application.
@@ -78,6 +85,32 @@ public class Dia_trade {
 		shlSw.setText("\u4EA4\u6613\u8BB0\u5F55");
 		
 		table_trade = new Table(shlSw, SWT.FULL_SELECTION);
+		table_trade.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				
+				Point pt = new Point(e.x, e.y); 
+				 int i = 0;  
+				 while(i<table_trade.getItemCount()){
+					 TableItem item = table_trade.getItem(i);
+					 for(int j = 0; j<table_trade.getColumnCount();j++){
+						 Rectangle rect = item.getBounds(j); 
+						 if(rect.contains(pt)){
+							 
+							 row = i;
+							 column = j;
+							 break ; 
+							 
+						 }
+					 }
+					 i++;	 
+				 }
+				 
+				Dia_tradechange window = new Dia_tradechange(table_trade.getItem(row).getText(column)
+						,row,column);
+				                window.open();
+			}
+		});
 		table_trade.setBounds(0, 0, 579, 417);
 		table_trade.setHeaderVisible(false);
 		table_trade.setLinesVisible(false);

@@ -69,7 +69,7 @@ public class homepage {
 	public String code;
 	public static Table table_chicang;
 	private String path_file="";
-	private static String path_userinfo="C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\用户信息.xls";
+	public static String path_userinfo="C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\用户信息.xls";
 	public static String path_trade = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\交易记录.xls";
 	private static String path_chicang ="C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\当前持仓.xls";
 	public static  String path_chigu = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data";
@@ -136,18 +136,7 @@ public class homepage {
 		Display display = Display.getDefault();
 		createContents();
 		
-		//导入用户信息
-		try {
-						
-			DataBuilder.tablemaker(path_userinfo,table_userinfo);
-			
-		} catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		
 
 		
@@ -278,6 +267,44 @@ public class homepage {
 		
 		mntmNewItem_1.setText("刷新");
 		
+		MenuItem mntmNewItem_5 = new MenuItem(menu_1, SWT.NONE);
+		mntmNewItem_5.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				if(isimport){
+					MessageBox messagebox = new MessageBox(shell, SWT.YES | SWT.NO);
+				messagebox.setText("初始化");
+					messagebox.setMessage("          确认是否保存数据以初始化界面");
+					int val = messagebox.open();
+				if (val == SWT.YES) {
+					
+					// 创建导出数据类
+					Exporter export = new Exporter();
+					export.creat();
+					
+					//擦除表格
+					table_chicang.removeAll();
+					table_userinfo.removeAll();
+					
+					//清空搜索框
+					homepage.text_search.setText("");
+					
+					//清空stockslist表
+					stkl.stockslist.removeAll(stkl.stockslist);
+					
+					//标记成没有导入数据
+					isimport = false;
+					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "无需初始化界面");
+				}
+				
+			}
+		});
+		mntmNewItem_5.setText("初始化界面");
+		
 		MenuItem mntmNewItem_2 = new MenuItem(menu_1, SWT.SEPARATOR);
 		
 		//退出
@@ -287,23 +314,27 @@ public class homepage {
 			public void widgetSelected(SelectionEvent e) {
 				MessageBox messagebox = new MessageBox(shell, SWT.YES | SWT.NO);
 				messagebox.setText("退出");
-				
-				if(table_chicang.getItemCount()==0){
-				messagebox.setMessage("          没有持仓数据，那我要直接退出咯！");
-				}
-				else{
-					messagebox.setMessage("          确认是否保存数据以退出");
-				}
-				
-				int val = messagebox.open();
-				if (val == SWT.YES) {
+
+				if (table_userinfo.getItemCount() == 0) {
+					messagebox.setMessage("          没有用户数据，那我要直接退出咯！");
+					int val = messagebox.open();
+					if (val == SWT.YES){
+						shell.dispose();
+					}
 					
-					// 创建导出数据类
-					Exporter export = new Exporter();
-					export.creat();
-					// 退出程序
-					shell.close();
+				} else {
+					messagebox.setMessage("          确认是否保存数据以退出");
+					int val = messagebox.open();
+					if (val == SWT.YES) {
+
+						// 创建导出数据类以保存数据
+						Exporter export = new Exporter();
+						export.creat();
+						// 退出程序
+						shell.dispose();
+					}
 				}
+
 			}
 		});
 		mntmNewItem_3.setText("退出");
@@ -318,12 +349,38 @@ public class homepage {
 		menuItem_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Dia_trade window = new Dia_trade();
-				window.open();
+				if(homepage.isimport){
+					Dia_trade window = new Dia_trade();
+					window.open();
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "请先导入数据");
+				}
+				
 			}
 		});
 
 		menuItem_1.setText("交易记录");
+		
+		MenuItem menuItem_shortsell = new MenuItem(menu_2, SWT.NONE);
+		menuItem_shortsell.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			//	Dia_shortsell window = new Dia_shortsell();
+			//	window.open();
+			}
+		});
+		menuItem_shortsell.setText("卖空");
+		
+		MenuItem menuItem_cover = new MenuItem(menu_2, SWT.NONE);
+		menuItem_cover.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//Dia_cover window = new Dia_cover();
+				//window.open();
+			}
+		});
+		menuItem_cover.setText("补仓");
 		
 		MenuItem menuItem_2 = new MenuItem(menu, SWT.CASCADE);
 		menuItem_2.setText("用户");
@@ -507,8 +564,7 @@ public class homepage {
 		formToolkit.paintBordersFor(composite_shouyilv);
 		
 	     lbl_shouyilv = new Label(composite_shouyilv, SWT.NONE);
-		lbl_shouyilv.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\shouyilv.png"));
-		lbl_shouyilv.setBounds(75, 10, 641, 387);
+		lbl_shouyilv.setBounds(10, 10, 706, 414);
 		formToolkit.adapt(lbl_shouyilv, true, true);
 		
 		TabItem tabItem_chigu = new TabItem(tabFolder, SWT.NONE);
@@ -520,7 +576,7 @@ public class homepage {
 		formToolkit.paintBordersFor(composite_chigu);
 		
 		lbl_chigu = new Label(composite_chigu, SWT.NONE);
-		lbl_chigu.setBounds(74, 47, 632, 355);
+		lbl_chigu.setBounds(10, 10, 696, 414);
 		formToolkit.adapt(lbl_chigu, true, true);
 		
 	

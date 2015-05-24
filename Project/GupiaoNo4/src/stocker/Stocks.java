@@ -2,7 +2,7 @@ package stocker;
 
 
 public class Stocks {
-	private String name;
+	private String name;//股票名称
 	private String code;
 	private String place;
 	private int num;//持有量

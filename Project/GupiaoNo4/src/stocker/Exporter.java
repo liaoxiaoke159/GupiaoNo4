@@ -82,6 +82,7 @@ public class Exporter {
 		String[] information = new String[31];
 
 		int num = stockslist.size();
+		int rows = sheet.getRows();
 		for(int i =0; i<num; i++){
 			
 		
@@ -131,6 +132,11 @@ public class Exporter {
 		Label label10 = new Label(9,i,nf_price.format((nowprice-price)*(double)stockslist.get(i).getNum()));
 		sheet.addCell(label10);////浮动盈亏
 		
+		}
+		
+		//删除因卖完某只股票产生多余的行
+		for(int index = num;index<rows;index++){
+			sheet.removeRow(index);
 		}
 		
 		// 4、打开流，开始写文件

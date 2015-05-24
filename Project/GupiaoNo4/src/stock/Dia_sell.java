@@ -67,6 +67,9 @@ public class Dia_sell {
 //		}
 //	}
 
+	
+	
+	
 	/**
 	 * Open the window.
 	 */
@@ -86,7 +89,7 @@ public class Dia_sell {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shell = new Shell();
+		shell = new Shell(shell,SWT.SHELL_TRIM|SWT.APPLICATION_MODAL);
 		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
 		shell.setSize(488, 398);
 		shell.setText("Âô³ö");//ÉèÖÃ´°¿Ú

@@ -62,7 +62,7 @@ public class Dia_info {
 			information=Internet.share.Internet.getSharedata(place, code);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null, "请检查网络", "异常", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "网络异常或者不存在该只股票", "异常", JOptionPane.ERROR_MESSAGE);
 		    
 		}
 	}
@@ -96,7 +96,8 @@ public class Dia_info {
 	 */
 	public void open() {
 		Display display = Display.getDefault();
-		createContents();
+		boolean creatbool=createContents();
+		if(!creatbool){return;}
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -110,7 +111,7 @@ public class Dia_info {
 	 * Create contents of the window.
 	 */
 	
-	protected void createContents() {
+	protected boolean createContents() {
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
@@ -122,17 +123,20 @@ public class Dia_info {
 
 		
 		String name=information[0];
+		if(name==null){	
+			JOptionPane.showMessageDialog(null, "不存在的股票01");
+			return false;
+		}
 		String[] names=new String[2];
 		System.out.println("搜索出的股票名:"+name+"(Dia_info 126)");
-		if(name==null){
-			
-			return;
-		}
 		names=name.split("\"");
 		name=names[1];
-			
+		if(name.length()==0){	
+			JOptionPane.showMessageDialog(null, "不存在的股票02");
+			return false;
+		}	
 		Label lbl_sharename = new Label(shell, SWT.NONE);
-		lbl_sharename.setBounds(10, 10, 61, 17);
+		lbl_sharename.setBounds(10, 10, 128, 17);
 		lbl_sharename.setText(name);
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH:mm");
@@ -158,8 +162,27 @@ public class Dia_info {
 				
 			}
 		});
-		btn_trade.setBounds(113, 5, 80, 27);
-		btn_trade.setText("\u4E70\u5356");
+		btn_trade.setBounds(163, 5, 49, 27);
+		btn_trade.setText("买卖");
+		
+		Button btnNewButton = new Button(shell, SWT.NONE);
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if(i==0){
+					Dia_shortsell window = new Dia_shortsell(information,place);
+				window.open();
+				}
+				else{
+					Dia_cover window = new Dia_cover(information,place);
+					window.open();
+				}
+				
+			}
+		});
+		btnNewButton.setBounds(217, 5, 49, 27);
+		formToolkit.adapt(btnNewButton, true, true);
+		btnNewButton.setText("卖补");
 		
 		Label lbl_open = new Label(shell, SWT.NONE);
 		lbl_open.setBounds(10, 56, 61, 17);
@@ -278,6 +301,8 @@ public class Dia_info {
 		lbl_time.setText(time);
 		
 		
+		
+		return true;
 
 	}
 }

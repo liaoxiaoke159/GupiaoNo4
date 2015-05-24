@@ -11,6 +11,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -39,7 +41,21 @@ public class Importer {
 			return ;
 		}
 
+		//导入用户信息
+		try {
+						
+			DataBuilder.tablemaker(homepage.path_userinfo,homepage.table_userinfo);
+			
+		} catch (BiffException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		
+		// 把持仓excel表转化成Stocks类
 		try {
 			 homepage.stkl.stockslist_initial(path_file);
 		} catch (BiffException e) {
@@ -48,7 +64,7 @@ public class Importer {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}// 把持仓excel表转化成Stocks类
+		}
 
 		
 		// DataBuilder.Excel_chicang_update(StockMain.getStocksList(),homepage.get_path_chicang());
@@ -64,11 +80,22 @@ public class Importer {
 		 
 		homepage.isimport = true; // 标记已导入数据
 		
-		 Pie pie = new Pie( homepage.stkl.stockslist);
-		 pie.getChartPanel(homepage.path_chigu);
-		 homepage.lbl_chigu.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chigu.png"));
 		 
 		
+	
+		
+		
+		chiguANDshouyilv();
+		
+		
+		
+		
+	}
+	
+
+
+	public static void chiguANDshouyilv() {
+		// TODO Auto-generated method stub
 		List<Trade> tradelist = new ArrayList<Trade>();
 		try {
 			tradelist = DataBuilder.tradelistmaker(homepage.path_trade);
@@ -84,26 +111,32 @@ public class Importer {
 					+" "+tradelist.get(i).get_price()+" "+tradelist.get(i).get_date());
 		}
 	*/
-		List<StockTrade> stocktradelist = new ArrayList<StockTrade>();
-		stocktradelist = DataBuilder.stockreturnratemaker(tradelist);
-	
-		for(int i=0;i<stocktradelist.size();i++){
-			System.out.println(stocktradelist.get(i).getname()+" "+stocktradelist.get(i).getcode()
-					+" "+stocktradelist.get(i).num_buy+" "+ stocktradelist.get(i).costprice
-					+" "+ stocktradelist.get(i).num_sell+" "+stocktradelist.get(i).date.get(0)+" "+stocktradelist.get(i).sumprice+ " "
-					+stocktradelist.get(i).getrate().get(0) );
-		}
+		Sumreturnrate sumreturnrate = new Sumreturnrate();
+		sumreturnrate = DataBuilder.Sumreturnratemaker(tradelist);
 		
-		/*
-		//此处生成收益率图片
-		Linechart linechart = new Linechart(stocktradelist);
+		Linechart linechart = new Linechart(sumreturnrate);
 		linechart.getChartPanel("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data");
-		*/
-		homepage.lbl_shouyilv.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\shouyilv.png"));
-	
-	}
-	
+		
+		homepage.lbl_shouyilv.setImage(new Image(Display.getDefault(), "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\shouyilv.png"));
 
+//		for(int loop =0; loop <sumreturnrate.date.size();loop++){
+//			System.out.println(sumreturnrate.date.get(loop)+" "+sumreturnrate.rate.get(loop) );
+//		}
+		
+		List<HistoryStockown> HSOL = new ArrayList<HistoryStockown>();
+		HSOL = DataBuilder.HistoryStockownmaker(tradelist);
+		AreaJFreeChart AJC = new AreaJFreeChart(HSOL);
+		AJC.getChartPanel("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data");
+		homepage.lbl_chigu.setImage(new Image(Display.getDefault(), "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chigu.png"));
+//		  for(int stockloop = 0 ;stockloop < HSOL.size(); stockloop++){
+//			  System.out.println(HSOL.get(stockloop).name + " " + HSOL.get(stockloop).code+" :");
+//			  for(int dateloop = 0;dateloop < HSOL.get(stockloop).date.size(); dateloop++){
+//				  System.out.println(HSOL.get(stockloop).date.get(dateloop)
+//						  +" "+HSOL.get(stockloop).number.get(dateloop));
+//			  }
+//		  }
+		
+	}
 
 	public static void userinfo_table_change(Table table_userinfo, List<Stocks> stockslist) {
 		// TODO Auto-generated method stub
@@ -113,7 +146,6 @@ public class Importer {
 		
 		if(stockslist.isEmpty()){
 			
-			JOptionPane.showMessageDialog(null, "当前持仓list为空，用户信息没有修改");
 			return;
 		}
 		double sumprice=0;//持有市值

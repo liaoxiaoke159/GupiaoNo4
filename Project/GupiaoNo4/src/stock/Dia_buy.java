@@ -33,6 +33,8 @@ import javax.swing.JOptionPane;
 import jxl.read.biff.BiffException;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
 public class Dia_buy  {
 
@@ -42,8 +44,8 @@ public class Dia_buy  {
 	private static Text text_downprice;
 	private static Text text_limitnum;
 	private static Text text_fundown;
-	private static Text text_price;
-	private static Text text_num;
+	public static Text text_price;
+	public static Text text_number;
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Label label;
 	private Label label_1;
@@ -64,7 +66,7 @@ public class Dia_buy  {
 //			e.printStackTrace();
 //		}
 //	}
-	
+//	
 	
 	
 	public Dia_buy(String[] information,String place) {
@@ -101,7 +103,7 @@ public class Dia_buy  {
 	}
 	public static Text getnum() {
 		// TODO Auto-generated method stub
-		return text_num;
+		return text_number;
 	}
 	/**
 	 * Open the window.
@@ -124,7 +126,7 @@ public class Dia_buy  {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shell = new Shell();
+		shell = new Shell(shell,SWT.SHELL_TRIM|SWT.APPLICATION_MODAL);
 		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
 		shell.setSize(488, 398);
 		shell.setText("买入");//设置窗口
@@ -147,10 +149,11 @@ public class Dia_buy  {
 		text_fundown.setBounds(169, 156, 73, 23);
 		
 		text_price = new Text(shell, SWT.BORDER);
+		
 		text_price.setBounds(169, 185, 73, 23);
 		
-		text_num = new Text(shell, SWT.BORDER);
-		text_num.setBounds(169, 214, 73, 23);
+		text_number = new Text(shell, SWT.BORDER);
+		text_number.setBounds(169, 214, 73, 23);
 		
 		
 		text_price.addTraverseListener(new TraverseListener() {
@@ -163,7 +166,7 @@ public class Dia_buy  {
 			}
 		});
 		
-		text_num.addTraverseListener(new TraverseListener() {
+		text_number.addTraverseListener(new TraverseListener() {
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == 16777296 |e.keyCode == 13) {
 					// e.detail = SWT.TRAVERSE_TAB_NEXT;
@@ -240,16 +243,16 @@ public class Dia_buy  {
 		// TODO Auto-generated method stub
 		if(!homepage.isimport){
 			JOptionPane.showMessageDialog(null, "先导入用户数据吧");
-		}else if ( (text_num.getText().isEmpty())|| (text_price.getText().isEmpty())) {
+		}else if ( (text_number.getText().isEmpty())|| (text_price.getText().isEmpty())) {
 			
 			JOptionPane.showMessageDialog(null, "亲，总要输点东西吧");
 			
-		} else if(!Userinfochange.isNumeric(text_num.getText())
+		} else if(!Userinfochange.isNumeric(text_number.getText())
     			|!Userinfochange.isNumeric(text_price.getText())){
     		
     		JOptionPane.showMessageDialog(null, "输入数字喔");
     	}
-		else if(Integer.parseInt(text_num.getText())>Integer.parseInt(text_limitnum.getText())){
+		else if(Integer.parseInt(text_number.getText())>Integer.parseInt(text_limitnum.getText())){
 			JOptionPane.showMessageDialog(null, "委托数量不能高于可买数量");
 		}
 		else if (Integer.parseInt(Dia_buy.getnum().getText())<100 ||Integer.parseInt(Dia_buy.getnum().getText()) % 100 != 0) {
@@ -293,9 +296,4 @@ public class Dia_buy  {
 		
 
 	}
-	
-	
-	
-
-
 }

@@ -162,7 +162,7 @@ public class DataBuilder {
 			
 			try {
 				 
-				information =Internet.share.Internet.getSharedata(stocksList.get(i).getplace(),
+				information = Internet.share.Internet.getSharedata(stocksList.get(i).getplace(),
 					stocksList.get(i).getSocketcode()); 
 
 			} catch (Exception e) {
@@ -252,7 +252,7 @@ public class DataBuilder {
 		
 	}
 
-
+/*
    //传入tradelist返回交易stocktradelist
 	public static List<StockTrade> stockreturnratemaker(List<Trade> tradelist) {
 		
@@ -308,7 +308,113 @@ public class DataBuilder {
 		
 	}
 
-
-
+*/
 	
+	
+	public static Sumreturnrate Sumreturnratemaker(List<Trade> tradelist){
+		
+		Sumreturnrate sumreturnrate = new Sumreturnrate();
+		
+		int tradelength = tradelist.size();//股票记录条数
+		
+		for(int loop = 0;loop < tradelength;loop++){
+			
+			//如果是买入或者补仓记录
+			if(tradelist.get(loop).get_trade_stytle().equals("买入")
+					||tradelist.get(loop).get_trade_stytle().equals("补仓")){
+				
+				sumreturnrate.addSumprice_in(tradelist.get(loop).get_price(),
+						tradelist.get(loop).get_num());
+				sumreturnrate = ramainstockdealer(sumreturnrate,loop,tradelist);
+				sumreturnrate.addrate(tradelist.get(loop).get_date());
+			}
+			
+			//如果是卖出或者卖空记录
+			if(tradelist.get(loop).get_trade_stytle().equals("卖出")
+					||tradelist.get(loop).get_trade_stytle().equals("卖空")){
+				
+				sumreturnrate.addSumprice_out(tradelist.get(loop).get_price(),
+						tradelist.get(loop).get_num());
+				ramainstockdealer(sumreturnrate,loop,tradelist);
+				sumreturnrate.addrate(tradelist.get(loop).get_date());
+			}
+		}
+		return sumreturnrate;
+		
+	}
+
+public static  Sumreturnrate ramainstockdealer(Sumreturnrate sumreturnrate, int loop, List<Trade> tradelist) {
+	// TODO Auto-generated method stub
+	
+	if(sumreturnrate.remainstocklist.isEmpty()){
+		
+		Remainstock remainstock = new Remainstock(tradelist.get(loop).get_name(),tradelist.get(loop).get_code(),
+				tradelist.get(loop).get_place(),tradelist.get(loop).get_num());
+		sumreturnrate.remainstocklist.add(remainstock);
+		
+		return sumreturnrate;
+		
+	}
+	
+	int TAG = 0;//标记是否找到相同股票  0没有找到 1找到
+	for(int remainloop =0; remainloop<sumreturnrate.remainstocklist.size();remainloop++){
+		if(sumreturnrate.remainstocklist.get(remainloop).getCode().equals(tradelist.get(loop).get_code())
+				&&sumreturnrate.remainstocklist.get(remainloop).getPlace().equals(tradelist.get(loop).get_place())){
+			     int sumnum = sumreturnrate.remainstocklist.get(remainloop).getNumber()+tradelist.get(loop).get_num();
+			     sumreturnrate.remainstocklist.get(remainloop).setNumber(sumnum);
+			     TAG = 1;
+			     break;
+		       }
+	}
+	
+	//如果没有找到相同的股票
+	if(TAG == 0){
+	Remainstock remainstock = new Remainstock(tradelist.get(loop).get_name(),tradelist.get(loop).get_code(),
+					tradelist.get(loop).get_place(),tradelist.get(loop).get_num());
+			sumreturnrate.remainstocklist.add(remainstock);
+	}
+	
+	return sumreturnrate;
+}
+
+
+	public static List<HistoryStockown> HistoryStockownmaker(List<Trade> tradelist) {
+
+		List<HistoryStockown> HSOL = new ArrayList<HistoryStockown>();//定义一个历史股票类链表
+		HistoryStockown HSO ;//历史股票类
+		
+		//遍历每条记录
+		for (int tradeloop = 0; tradeloop < tradelist.size(); tradeloop++) {
+
+			//只选择买入或者卖出记录
+			if (tradelist.get(tradeloop).get_trade_stytle().equals("卖空")
+					|| tradelist.get(tradeloop).get_trade_stytle().equals("补仓")) {
+				continue;
+			}
+			
+			int TAG = 0;//标记是否找到相同股票  0表示没有找到 1表示找到
+			for(int stockownloop =0; stockownloop < HSOL.size();stockownloop++){
+				if(tradelist.get(tradeloop).get_name().equals(HSOL.get(stockownloop).name)
+				  &&tradelist.get(tradeloop).get_code().equals(HSOL.get(stockownloop).code)
+				  &&tradelist.get(tradeloop).get_place().equals(HSOL.get(stockownloop).place)){
+					
+				HSOL.get(stockownloop).addnumber_date(tradelist.get(tradeloop).get_num(), tradelist.get(tradeloop).get_date());
+				TAG = 1;
+				break;
+				}
+			}
+			if(TAG == 0){
+				HSO = new HistoryStockown(tradelist.get(tradeloop).get_name(),tradelist.get(tradeloop).get_code(),
+						tradelist.get(tradeloop).get_place());
+				HSO.addnumber_date(tradelist.get(tradeloop).get_num(), tradelist.get(tradeloop).get_date());
+				HSOL.add(HSO);
+			}
+			
+
+		}
+
+		return HSOL;
+
+	}
+
 }

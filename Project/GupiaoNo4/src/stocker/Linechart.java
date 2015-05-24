@@ -21,9 +21,9 @@ import org.jfree.data.xy.XYDataset;
 public class Linechart {
 	ChartPanel frame1;
 	JFreeChart jfreechart;
-    public Linechart(List<StockTrade> l){
-        XYDataset xydataset = createDataset(l);
-        jfreechart = ChartFactory.createTimeSeriesChart("股票收益率", "日期", "价格",xydataset, true, true, true);
+    public Linechart(Sumreturnrate SRR){
+        XYDataset xydataset = createDataset(SRR);
+        jfreechart = ChartFactory.createTimeSeriesChart("股票收益率", "日期", "收益率",xydataset, true, true, true);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         DateAxis dateaxis = (DateAxis) xyplot.getDomainAxis();
         dateaxis.setDateFormatOverride(new SimpleDateFormat("ddd-MMM-yyyy"));
@@ -36,30 +36,27 @@ public class Linechart {
         jfreechart.getTitle().setFont(new Font("宋体",Font.BOLD,20));//设置标题字体
  
     }
-     private static XYDataset createDataset(List<StockTrade> l) {  //这个数据集有点多，但都不难理解
-            TimeSeriesCollection timeseriescollection = new TimeSeriesCollection();
-            for(StockTrade s:l){
+    private static XYDataset createDataset(Sumreturnrate s) {  //这个数据集有点多，但都不难理解
+        TimeSeriesCollection timeseriescollection = new TimeSeriesCollection();
+        TimeSeries time=new TimeSeries("收益率",org.jfree.data.time.Day.class);
+        for(int i=0;i<s.date.size();i++){
+        	
+        	String day=s.date.get(i);
+    		String[] days=new String[3];
+    		days=day.split("/");
+    		int d=0,m=0,y=0;
+    		d=Integer.parseInt(days[2]);
+    		m=Integer.parseInt(days[1]);
+    		y=Integer.parseInt(days[0]);
+    		time.add(new Day(d,m,y),s.rate.get(i));
+        }
+        timeseriescollection.addSeries(time);
+        return timeseriescollection;
+        }
 
-            	@SuppressWarnings("deprecation")
-				TimeSeries time=new TimeSeries(s.name,org.jfree.data.time.Day.class);
-
-            	for(int i=0;i<s.date.size();i++){
-            		String day=s.date.get(i);
-            		String[] days=new String[3];
-            		days=day.split("/");
-            		int d=0,m=0,y=0;
-            		d=Integer.parseInt(days[2]);
-            		m=Integer.parseInt(days[1]);
-            		y=Integer.parseInt(days[0]);
-            		time.add(new Day(d,m,y),s.rate.get(i));
-            	}
-            	timeseriescollection.addSeries(time);
-            	}
-            return timeseriescollection;
-            }
      public void getChartPanel(String path){
 	    	try {
-				ChartUtilities.saveChartAsPNG(new File(path+"\\shouyilv.png"), jfreechart, 550, 250);
+				ChartUtilities.saveChartAsPNG(new File(path+"\\shouyilv.png"), jfreechart, 700, 400);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
