@@ -362,26 +362,6 @@ public class homepage {
 
 		menuItem_1.setText("交易记录");
 		
-		MenuItem menuItem_shortsell = new MenuItem(menu_2, SWT.NONE);
-		menuItem_shortsell.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			//	Dia_shortsell window = new Dia_shortsell();
-			//	window.open();
-			}
-		});
-		menuItem_shortsell.setText("卖空");
-		
-		MenuItem menuItem_cover = new MenuItem(menu_2, SWT.NONE);
-		menuItem_cover.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//Dia_cover window = new Dia_cover();
-				//window.open();
-			}
-		});
-		menuItem_cover.setText("补仓");
-		
 		MenuItem menuItem_2 = new MenuItem(menu, SWT.CASCADE);
 		menuItem_2.setText("用户");
 		

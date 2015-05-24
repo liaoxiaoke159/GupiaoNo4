@@ -36,14 +36,14 @@ public class Dia_trade {
 	 * Launch the application.
 	 * @param args
 	 */
-//	public static void main(String[] args) {
-//		try {
-//			Dia_trade window = new Dia_trade();
-//			window.open();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public static void main(String[] args) {
+		try {
+			Dia_trade window = new Dia_trade();
+			window.open();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Open the window.
