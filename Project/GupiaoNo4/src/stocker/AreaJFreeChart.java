@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JPanel;
  
 
 
@@ -42,7 +41,7 @@ public class AreaJFreeChart {
 	}
 	public  void getChartPanel(String path){//save to png
     	try {
-			ChartUtilities.saveChartAsPNG(new File(path+"\\chigu.png"), chart, 700, 400);
+			ChartUtilities.saveChartAsPNG(new File(path+"\\chigu.png"), chart, 700, 350);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

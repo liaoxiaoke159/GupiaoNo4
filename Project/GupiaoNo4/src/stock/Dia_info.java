@@ -40,22 +40,24 @@ public class Dia_info {
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private static String code;//代码				
 	public String place;//交易所 sh sz
-	private String path=new String("C:\\Users\\Administrator\\Desktop\\搜索包");//保存的路径
+	private String path=new String("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\搜索包");//保存的路径
 	private String spath;
 	public String[] information=new String[31];
 	private int i;
+	private int tabitemindex;
+	private int tableindex;
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-	public Dia_info(String place ,String code,int i){
+	public Dia_info(String place ,String code,int i,int index){
 		this.place=place;
 		this.code=code;
 		this.i=i;
+		this.tabitemindex = index;
 		this.spath=code+".jpg";
+		this.tableindex = homepage.tableindex;
 		
-		System.out.println(this.place+" "+this.code+"(Dia_fo 57)");
-		System.out.println();
 		
 		try {
 			
@@ -114,7 +116,7 @@ public class Dia_info {
 	protected boolean createContents() {
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
+		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chaogushenqi.png"));
 
 		shell.setSize(585, 514);
 		shell.setText("\u80A1\u7968\u4FE1\u606F");
@@ -152,11 +154,11 @@ public class Dia_info {
 			public void mouseDown(MouseEvent e) {	
 				
 				if(i==0){
-					Dia_buy window = new Dia_buy(information,place);
+					Dia_buy window = new Dia_buy(information,place,tabitemindex);
 				window.open();
 				}
 				else{
-					Dia_sell window = new Dia_sell(information,place);
+					Dia_sell window = new Dia_sell(information,place,tabitemindex);
 					window.open();
 				}
 				
@@ -165,24 +167,25 @@ public class Dia_info {
 		btn_trade.setBounds(163, 5, 49, 27);
 		btn_trade.setText("买卖");
 		
-		Button btnNewButton = new Button(shell, SWT.NONE);
-		btnNewButton.addMouseListener(new MouseAdapter() {
+		
+		Button btn_shortcover = new Button(shell, SWT.NONE);
+		btn_shortcover.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				if(i==0){
-					Dia_shortsell window = new Dia_shortsell(information,place);
+					Dia_shortsell window = new Dia_shortsell(information,place,tabitemindex);
 				window.open();
 				}
 				else{
-					Dia_cover window = new Dia_cover(information,place);
+					Dia_cover window = new Dia_cover(information,place,tabitemindex);
 					window.open();
 				}
 				
 			}
 		});
-		btnNewButton.setBounds(217, 5, 49, 27);
-		formToolkit.adapt(btnNewButton, true, true);
-		btnNewButton.setText("卖补");
+		btn_shortcover.setBounds(217, 5, 49, 27);
+		formToolkit.adapt(btn_shortcover, true, true);
+		btn_shortcover.setText("卖补");
 		
 		Label lbl_open = new Label(shell, SWT.NONE);
 		lbl_open.setBounds(10, 56, 61, 17);
@@ -300,6 +303,12 @@ public class Dia_info {
 		lbl_time.setBounds(383, 460, 156, 17);
 		lbl_time.setText(time);
 		
+		if(Integer.parseInt(homepage.table_chicangs.get(tabitemindex).getItem(tableindex).getText(5))>0){
+			btn_shortcover.setEnabled(false);
+		}
+		else{
+			btn_trade.setEnabled(false);
+		}
 		
 		
 		return true;

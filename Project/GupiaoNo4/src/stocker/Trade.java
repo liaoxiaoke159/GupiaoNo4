@@ -11,6 +11,16 @@ public class Trade {
 	private String place;//½»Ò×Ëù
 	
 
+	public Trade(){}
+	public Trade(String name,String code,String date,String style,double price,int num,String place){
+		this.name = name;
+		this.code = code;
+		this.date = date;
+		this.trade_stytle = style;
+		this.price = price;
+		this.num = num;
+		this.place = place;
+	}
  	public  void set_name(String name){
 		this.name = name;
 	}

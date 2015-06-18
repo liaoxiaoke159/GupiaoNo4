@@ -1,10 +1,10 @@
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +13,8 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
@@ -20,14 +22,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.junit.Test;
 
+import stock.NewAccount;
 import stock.homepage;
 import stocker.DataBuilder;
-import stocker.Exporter;
-import stocker.Importer;
-import stocker.Stockown;
+import stocker.DataDealer;
+import stocker.HistoryStockown;
+import stocker.PlaceOder;
 import stocker.Stocks;
 import stocker.Trade;
 
@@ -35,13 +37,14 @@ import stocker.Trade;
 public class JunitTest {
 	
 	private  Shell shell;
-	private Table tabletest;
 	List<Stocks> stockslist;
 	
 	/**
 	 * 实例化一个table的方法
+	 * @return 
 	 */
-	public void tableinfoTestcreat(){
+	public Table tableinfoTestcreat(){
+		Table tabletest;
 		shell =new Shell();
 		tabletest = new Table(shell, SWT.FULL_SELECTION);
 		tabletest.setHeaderVisible(false);
@@ -70,269 +73,47 @@ public class JunitTest {
 		tblclmnNewColumn_4.setWidth(77);
 		tblclmnNewColumn_4.setText("New Column");
 		
+		TableColumn tblclmnNewColumn_5 = new TableColumn(tabletest,
+				SWT.NONE);
+		tblclmnNewColumn_5.setWidth(77);
+		tblclmnNewColumn_5.setText("New Column");
+		
+		TableColumn tblclmnNewColumn_6 = new TableColumn(tabletest,
+				SWT.NONE);
+		tblclmnNewColumn_6.setWidth(77);
+		tblclmnNewColumn_6.setText("New Column");
+		
+		return tabletest;
 	}
 	
 	
-
-	/**
-	 * 测试把excel用户信息导入到界面table上
-	 */
-	@Test
-	public void tablemakerTest() {
-		
-		
-		String path_usrinfoTest = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\userinfoTest.xls";
-		
-		//实例化一个table
-		tableinfoTestcreat();
-		try {
-			DataBuilder.tablemaker(path_usrinfoTest, tabletest);
-		} catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
-
-		String fundTest = "2000";//期望值
-		String fundtruevalue = tabletest.getItem(1).getText(0);//真实值
-		assertEquals(fundTest, fundtruevalue);//断言方法 
-		
-		String fundownTest = "2000";//期望值
-		String fundowntruevalue = tabletest.getItem(1).getText(1);//真实值
-		assertEquals(fundownTest, fundowntruevalue);//断言方法
-		
-		String fundsumTest = "2000";//期望值
-		String fundsumtruevalue = tabletest.getItem(1).getText(2);//真实值
-		assertEquals(fundsumTest, fundsumtruevalue);//断言方法
-		
-		String stocknumTest = "0";//期望值
-		String stocknumtruevalue =tabletest.getItem(1).getText(3);//真实值
-		assertEquals(stocknumTest, stocknumtruevalue);//断言方法
-		
-		String returnrateTest = "0.00%";//期望值
-		String returnratetruevalue = tabletest.getItem(1).getText(4);//真实值
-		assertEquals(returnrateTest, returnratetruevalue);//断言方法
-			
-	}
-		
-	/**
-	 * 测试增加一个股票到持股list
-	 */
-		 @Test
-	    public void addStockTest(){
-			 
-			// 实例化一个交易记录
-				Trade trade = new Trade();
-				trade.set_name("测试股票");
-				trade.set_code("000025");
-				trade.set_date("2015/5/12");
-				trade.set_num(600);
-				trade.set_place("sz");
-				trade.set_price(10.0);
-				trade.set_trade_stytle("买入");
-				
-				Stockown stk = new Stockown();
-				
-				//调用方法
-				stk.addStock(trade);
-				
-				String expected1 = trade.get_name();//期望值
-				String actual1 = stk.stockslist.get(0).getSocketname();//真实值
-				assertEquals(expected1,actual1);//断言方法
-				
-				String expected2 = trade.get_code();//期望值
-				String actual2 = stk.stockslist.get(0).getSocketcode();//真实值
-				assertEquals(expected2,actual2);//断言方法
-				
-				String expected3 = trade.get_place();//期望值
-				String actual3 = stk.stockslist.get(0).getplace();//真实值
-				assertEquals(expected3,actual3);//断言方法
-				
-				String expected4 = Double.toString(trade.get_price());//期望值
-				String actual4 = Double.toString(stk.stockslist.get(0).getcostprice());//真实值
-				assertEquals(expected4,actual4);//断言方法
-				
-				String expected5 = Integer.toString(trade.get_num()+300);//期望值
-				String actual5 = Integer.toString(stk.stockslist.get(0).getNum());//真实值
-				//System.out.println(expected5);
-				//System.out.println(actual5);
-				assertEquals(expected5,actual5);//断言方法
-				
-			 
-	    }
-	/**
-	 * 测试保存持股list到excel表
-	 */
-	@Test
-	public void stockownsaverTest(){
-		
-		//实例化一个持股list
-		Stocks stock =new Stocks("测试股票", "000025", "300");
-		stock.setplace("sz");
-		stock.setcostprice(10);
-		List<Stocks> stockslist = new ArrayList<Stocks>();
-		stockslist.add(stock);
-		
-		String path_chicang = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\stockownTest.xls";
-		
-		
-		try {
-			//调用方法
-			Exporter.stockownsaver(stockslist,path_chicang);
-		} catch (WriteException | BiffException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Workbook rwb = null;
-		try {
-			rwb = Workbook.getWorkbook(new FileInputStream(path_chicang));
-		} catch (BiffException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		rwb.getNumberOfSheets();
-
-		Sheet sheet = rwb.getSheet(0);
-		String[] information = new String[31];
-		
-		 try {
-			information = Internet.share.Internet.getSharedata("sz",stock.getSocketcode());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 
-		 
-		String expected1 = stockslist.get(0).getSocketname();//期望值
-		String actual1= sheet.getCell(0, 0).getContents();//真实值
-		assertEquals(expected1, actual1);//断言方法
-		
-		String expected2 = stockslist.get(0).getSocketcode();//期望值
-		String actual2= sheet.getCell(1, 0).getContents();//真实值
-		assertEquals(expected2, actual2);//断言方法
-		
-		String expected3 = stockslist.get(0).getplace();//期望值
-		String actual3= sheet.getCell(2, 0).getContents();//真实值
-		assertEquals(expected3, actual3);//断言方法
-		
-		String expected4 = information[3];//期望值
-		String actual4= sheet.getCell(3, 0).getContents();//真实值
-		assertEquals(expected4, actual4);//断言方法
-		
-		double nowprice = Double.parseDouble(information[3]);
-		double price = stockslist.get(0).getcostprice();
-		double rate = (nowprice - price)/price;
-		
-		// 百分数格式：有两位小数
-		NumberFormat nf_precent = NumberFormat.getPercentInstance();
-		nf_precent.setMinimumFractionDigits(2);
-		// double格式：有两位小数
-		NumberFormat nf_price = NumberFormat.getNumberInstance();
-		nf_price.setMinimumFractionDigits(2);
-		
-		String expected5 = nf_price.format(nowprice-price);//期望值
-		String actual5 = sheet.getCell(4, 0).getContents();//真实值
-		assertEquals(expected5, actual5);//断言方法
-		
-		String expected6 = Integer.toString(stockslist.get(0).getNum());//期望值
-		String actual6 = sheet.getCell(5, 0).getContents();//真实值
-		assertEquals(expected6, actual6);//断言方法
-		
-		String expected7 = Double.toString(nowprice*(double)stockslist.get(0).getNum());//期望值
-		String actual7 = sheet.getCell(6, 0).getContents();//真实值
-		assertEquals(expected7, actual7);//断言方法
-		
-		String expected8 =Double.toString(stockslist.get(0).getcostprice());//期望值
-		String actual8 = sheet.getCell(7, 0).getContents();//真实值
-		assertEquals(expected8, actual8);//断言方法
-		
-		String expected9 =nf_precent.format(rate);//期望值
-		String actual9 = sheet.getCell(8, 0).getContents();//真实值
-		assertEquals(expected9, actual9);//断言方法
-		
-		String expected10 =nf_price.format((nowprice-price)*(double)stockslist.get(0).getNum());//期望值
-		String actual10 = sheet.getCell(9, 0).getContents();//真实值
-		assertEquals(expected10, actual10);//断言方法
-		 
-		
-	}
-	
-/**
- * 测试持股excel表初始化到持股list
- */
-	@Test
-	public void stockslist_initialTest(){
-		
-		
-		//实例化一个stockslist
-		Stocks stock =new Stocks("测试股票", "000025", "300");
-		stock.setplace("sz");
-		stock.setcostprice(10.0);
-		List<Stocks> stockslistexpected = new ArrayList<Stocks>();
-		stockslistexpected.add(stock);//期望值
-		
-		String path_stockown = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\stockownTest.xls";
-		
-		List<Stocks> stockslistactual =null;
-		try {
-			//调用方法
-			 stockslistactual = Stockown.stockslist_initial(path_stockown); //真实值
-		} catch (BiffException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		String nameexpected = stock.getSocketname();
-		String nameactual = stockslistactual.get(0).getSocketname();
-		assertEquals(nameexpected ,nameactual);//断言方法
-		
-		String codeexpected = stock.getSocketcode();
-		String codeactual = stockslistactual.get(0).getSocketcode();
-		assertEquals(codeexpected ,codeactual);//断言方法
-		
-		String numexpected = Integer.toString(stock.getNum());
-		String numactual = Integer.toString(stockslistactual.get(0).getNum());
-		assertEquals(numexpected  ,numactual);//断言方法
-		
-		String placeexpected = stock.getplace();
-		String placeactual = stockslistactual.get(0).getplace();
-		assertEquals(placeexpected  ,placeactual);//断言方法
-		
-		String costpriceexpected = Double.toString(stock.getcostprice());
-		String costpriceactual = Double.toString(stockslistactual.get(0).getcostprice());
-		assertEquals(costpriceexpected  , costpriceactual);//断言方法		
-		
-	}
-	
-	
-
 	 
 	 
   /**
    *  测试添加一个交易记录到excel表格
    */
 	@Test
-	public void addtradeTest() {
+	public void DataBuilder_addtradeTest() {
 		
 
 		// 实例化一个交易记录
 		Trade trade = new Trade();
 		trade.set_name("测试");
-		trade.set_code("000000");
-		trade.set_date("2015/5/12");
-		trade.set_num(300);
-		trade.set_place("sz");
+		trade.set_code("000046");
+		trade.set_date("2015/5/19");
+		trade.set_num(3000);
+		trade.set_place("sh");
 		trade.set_price(888);
-		trade.set_trade_stytle("买入");
+		trade.set_trade_stytle("卖出");
 
 		
+		DataBuilder db = new DataBuilder();
 		String file_path_trade = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTest.xls";
 		try {
-			DataBuilder.addtrade(file_path_trade,trade);
+			if(!db.addtrade(file_path_trade,trade)){
+				System.out.println("卖出数量非法");
+				return;
+			}
 		} catch (RowsExceededException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -361,155 +142,339 @@ public class JunitTest {
 		Sheet Sheet = rwb.getSheet(0);
 		int rows = Sheet.getRows();
 		
-		Cell Cell1 = Sheet.getCell(0, rows-1);
+		//找出交易日期对应的一行 （该日期所有行中的最后一行）
+		int excelindex;
+		String[] date_trade = trade.get_date().split("/");
+		int loop = 2;
+		for(; loop <rows;++loop){
+			String[] date = Sheet.getCell(2,loop).getContents().split("/");
+				if(Integer.parseInt(date_trade[0])>=Integer.parseInt(date[0]))
+				{
+							if(Integer.parseInt(date_trade[1])>=Integer.parseInt(date[1])){
+								if(Integer.parseInt(date_trade[2])>=Integer.parseInt(date[2])){
+									
+									continue;
+								}else break;
+								
+							}else break;
+						}else break;
+						
+						}
+		excelindex = loop-1;			
+					
+		Cell Cell1 = Sheet.getCell(0, excelindex);
 		String nameexpected = Cell1.getContents();//期望值
 		String nametruevalue = trade.get_name();//真实值
 		assertEquals(nameexpected, nametruevalue);//断言方法
 		
-		Cell Cell2 = Sheet.getCell(1, rows-1);
+		Cell Cell2 = Sheet.getCell(1, excelindex);
 		String codeexpected = Cell2.getContents();//期望值
 		String codetruevalue = trade.get_code();//真实值
 		assertEquals(codeexpected, codetruevalue);//断言方法
 		
-		Cell Cell3 = Sheet.getCell(2, rows-1);
+		Cell Cell3 = Sheet.getCell(2, excelindex);
 		String dateexpected = Cell3.getContents();//期望值
 		String datetruevalue = trade.get_date();//真实值
 		assertEquals(dateexpected, datetruevalue);//断言方法
 		
-		Cell Cell4 = Sheet.getCell(3, rows-1);
+		Cell Cell4 = Sheet.getCell(3, excelindex);
 		String stytleexpected = Cell4.getContents();//期望值
 		String stytletruevalue = trade.get_trade_stytle();//真实值
 		assertEquals(stytleexpected,stytletruevalue);//断言方法
 		
-		Cell Cell5 = Sheet.getCell(4, rows-1);
+		Cell Cell5 = Sheet.getCell(4, excelindex);
 		String priceexpected = Cell5.getContents();//期望值
 		String pricetruevalue = Double.toString(trade.get_price());//真实值
 		assertEquals(priceexpected,pricetruevalue);//断言方法
 		
-		Cell Cell6 = Sheet.getCell(5, rows-1);
+		Cell Cell6 = Sheet.getCell(5, excelindex);
 		String numexpected = Cell6.getContents();//期望值
 		String numtruevalue = Integer.toString(trade.get_num());//真实值
 		assertEquals(numexpected, numtruevalue);//断言方法
 		
-		Cell Cell7 = Sheet.getCell(6, rows-1);
+		Cell Cell7 = Sheet.getCell(6, excelindex);
 		String placeexpected = Cell7.getContents();//期望值
 		String placetruevalue = trade.get_place();//真实值
 		assertEquals(placeexpected,placetruevalue);//断言方法
 		
-		
-		
-	}
-	
-   /**
-    * 测试用户信息table初始化  资产总值 持有股票数 盈利率有所修改
-    */
-	@Test
-	public void userinfo_table_changeTest() {
-		
-		//实例化一个持股list
-		Stocks stocktest = new Stocks("测试股票","000025","100");//名称，股票代码，数量
-		stocktest.setplace("sz");//交易所
-		stocktest.setcostprice(10);//成本价
-		stockslist = new ArrayList<Stocks>();
-		stockslist.add(stocktest);
-		
-		//实例化一个table
-		tableinfoTestcreat();
-		TableItem tableItem1 = new TableItem(tabletest,SWT.NONE);
-		String[] tableitem1text1 = new String[]{"初始资金","可用资金","资产总值","持有股票数量","盈利率"};
-		tableItem1.setText(tableitem1text1);	
-		TableItem tableItem2 = new TableItem(tabletest,SWT.NONE);
-		String[] tableitem1text2 = new String[]{"2000","2000","2000","0","0"};
-		tableItem2.setText(tableitem1text2);	
-		
-		Importer.userinfo_table_change(tabletest,stockslist);
-		
-		
-		String[] information = new String[31];
+		//恢复excel
+		WritableWorkbook writableWorkbook = null;
 		try {
-			 information = Internet.share.Internet.getSharedata("sz","000025");
-		} catch (Exception e) {
+			writableWorkbook = Workbook.createWorkbook(new File(file_path_trade),rwb);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		WritableSheet sheet =writableWorkbook.getSheet(0);
+		sheet.removeRow(excelindex);
+		try {
+			writableWorkbook.write();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			writableWorkbook.close();
+		} catch (WriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		double fund = Double.parseDouble(tabletest.getItem(1).getText(0));
-		double fundown = Double.parseDouble(tabletest.getItem(1).getText(1));
-		
+	}
 	
-		
-		double sumprice = Double.parseDouble(information[3])*stocktest.getNum();
-		String fundsumexpected = Double.toString(fundown + sumprice );//期望值
-		String fundsumactual = tabletest.getItem(1).getText(2);//真实值
-		assertEquals(fundsumexpected, fundsumactual);//断言方法
-		
-		String stocksnumexpecter = Integer.toString(stockslist.size());//期望值
-		String stocksnumactual = tabletest.getItem(1).getText(3);//真实值
-		assertEquals(stocksnumexpecter,stocksnumactual);//断言方法
-		
-		double returnrate=(Double.parseDouble(fundsumexpected)-fund)/fund;
-		NumberFormat nf = NumberFormat.getPercentInstance();
-		nf.setMinimumFractionDigits(2);
-		String returnrateexpected = nf.format(returnrate);//期望值
-		String returnrateactual = tabletest.getItem(1).getText(4);//真实值
-	    assertEquals(returnrateexpected,returnrateactual);//断言方法
-		
 	
+	/**
+	 * 测试从excel 读取一个交易记录
+	 */
+	@Test
+	public void DataBuilder_tradelistmakerTest(){
+		
+		List<Trade> tradelist = new ArrayList<Trade>();
+		DataBuilder dd = new DataBuilder();
+		try {
+			tradelist=dd.tradelistmaker("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTest.xls");
+		} catch (BiffException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Trade expected1 = new Trade("康达尔","000048","2015/05/17","买入",18.0,300,"sz");
+		Trade truevalue1 = tradelist.get(0);
+		assertEquals(expected1.get_name(),truevalue1.get_name());//断言方法
+		assertEquals(expected1.get_date(),truevalue1.get_date());
+		assertEquals(expected1.get_code(),truevalue1.get_code());
+		assertEquals(expected1.get_trade_stytle(),truevalue1.get_trade_stytle());
+		assertEquals(Double.toString(expected1.get_price()),Double.toString(truevalue1.get_price()));
+		assertEquals(expected1.get_num(),truevalue1.get_num());
+		assertEquals(expected1.get_place(),truevalue1.get_place());
+		
 	}
 	
 	/**
-	 * 测试保存用户信息到excel表
+	 * 测试导入路径是否合法
 	 */
 	@Test
-	public void userinfosaverTest() {
+	public void DataDealer_path_fileCheckTest(){
+		
+		String pathRight = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTest.xls";  //正确的路径
+		String pathWrong = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTestWrong.xls";//错误的路径
+		
+		DataDealer datadealer = new DataDealer("",-1);
+		
+		boolean expected = true;//期望值
+		boolean truevalue = datadealer.path_fileCheck(pathRight);//真实值
+		assertEquals(expected,truevalue);//断言方法
+		
+		boolean expected1 = false;//期望值
+		boolean truevalue1 = datadealer.path_fileCheck(pathWrong );//真实值
+		assertEquals(expected1,truevalue1);//断言方法
+	}
+	
 
-		// 实例化一个用户信息table
-		tableinfoTestcreat();
-		TableItem tableItem1 = new TableItem(tabletest, SWT.NONE);
-		String[] tableitem1text1 = new String[] { "初始资金", "可用资金", "资产总值",
-				"持有股票数", "盈利率" };
-		tableItem1.setText(tableitem1text1);
+	/**
+	 * 测试生成一个交易记录
+	 */
+	
+	@Test
+	public void PlaceOder_newtradeTest(){
 		
-		TableItem tableItem2 = new TableItem(tabletest, SWT.NONE);
-		String[] tableitem1text2 = new String[] { "2000", "2000", "2000", "0",	"0.00%" };
-		tableItem2.setText(tableitem1text2);
+		 PlaceOder placeoder = new  PlaceOder(0,"测试名","000000","测试类型","888","100","sz","2015/6/11");
+		 
+		 Trade tradetruevalue =placeoder.newtrade(placeoder.name, placeoder.code,
+				 placeoder.style, placeoder.price, placeoder.num, placeoder.place,placeoder.date);//真实值
+		 Trade tradeexpected = new Trade("测试名","000000","2015/6/11","测试类型",888,100,"sz");
+		   assertEquals(tradeexpected.get_name(),tradetruevalue.get_name());//断言方法
+			assertEquals(tradeexpected.get_date(),tradetruevalue.get_date());
+			assertEquals(tradeexpected.get_code(),tradetruevalue.get_code());
+			assertEquals(tradeexpected.get_trade_stytle(),tradetruevalue.get_trade_stytle());
+			assertEquals(Double.toString(tradeexpected.get_price()),Double.toString(tradetruevalue.get_price()));
+			assertEquals(tradeexpected.get_num(),tradetruevalue.get_num());
+			assertEquals(tradeexpected.get_place(),tradetruevalue.get_place());
+		 
+		 
+	}
+	
+	/**
+	 * 测试HistoryStockown类的addnumber_date方法
+	 */
+	@Test
+	public void HistoryStockown_addnumber_dateTest(){
+		HistoryStockown hs = new HistoryStockown("测试名","0000000","sz");
 		
-		String path_info_test = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\userinfoTest.xls";
-		try {
-			//调用方法
-			Exporter.userinfosaver(tabletest,path_info_test);
-			
-		} catch (WriteException | BiffException | IOException e) {
-			e.printStackTrace();
-		}
-
+		hs.addnumber_date(100,"2015/6/11");//调用方法 新增
+		int numexpected = 100;//期望值
+		int numtruevalue = hs.number.get(0);//真实值
+		assertEquals(numexpected,numtruevalue);//断言方法
 		
-		Workbook rwb = null;
-		try {
-			rwb = Workbook.getWorkbook(new FileInputStream(path_info_test));
-		} catch (BiffException | IOException e) {
-			e.printStackTrace();
-		}
+		hs.addnumber_date(100,"2015/6/11");//调用方法  增加数量 不增加日期
+		int numexpected1 = 200;//期望值
+		int numtruevalue1 = hs.number.get(0);//真实值
+		assertEquals(numexpected1,numtruevalue1);//断言方法
 		
-
-		Sheet sheet = rwb.getSheet(0);
+		hs.addnumber_date(100,"2015/6/12");//调用方法  增加一个日期
+		int numexpected2 = 200;//期望值
+		int numtruevalue2 = hs.number.get(0);//真实值
+		assertEquals(numexpected2,numtruevalue2);//断言方法
+		
+		int numexpected3 = 300;//期望值
+		int numtruevalue3 = hs.number.get(1);//真实值
+		assertEquals(numexpected3,numtruevalue3);//断言方法
+		
+	}
+	
+	/**
+	 * 测试homepage类的savepath方法
+	 * @throws IOException 
+	 * @throws BiffException 
+	 * @throws WriteException 
+	 */
+	
+	@Test
+	public void homepage_savepathTest() throws BiffException, IOException, WriteException{
+		String path = "需要保存的账户路径";
+		String path_account = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTestWrong.xls";//保存的位置
+		
+		homepage h = new homepage();
+		h.savepath(path,path_account);
+		
+		Workbook wb = Workbook.getWorkbook(new File(path_account));
+		Sheet sheet = wb.getSheet(0);
 		int rows = sheet.getRows();
-		int columns = sheet.getColumns();
 		
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				
-				String  expected= tabletest.getItem(i).getText(j);// 期望值
-				String actual = sheet.getCell(j, i).getContents();// 真实值
-				assertEquals(expected, actual);// 断言方法
-
-			}
-
-		}
-	
+		String expected = path;//期望值
+		String truevalue=sheet.getCell(0, rows-1).getContents(); ;//真实值
+		assertEquals(expected,truevalue);//断言方法
 		
+		
+		//恢复环境
+		WritableWorkbook wwb = Workbook.createWorkbook(new File(path_account),wb);
+		WritableSheet sheet1  = wwb.getSheet(0);
+		
+		sheet1.removeRow(rows-1);
+		
+		wwb.write();
+		wwb.close();
+		
+	}
 	
+	/**
+	 * 测试NewAccount类的 newexcel方法
+	 * @throws IOException 
+	 * @throws BiffException 
+	 */
+	@Test
+	public void  NewAccount_newexcelTest() throws BiffException, IOException{
+		String path = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\newtradeTset.xls";
+		NewAccount na = new NewAccount();
+		na.newexcel(path,"100");
+		Workbook wb = Workbook.getWorkbook(new File(path ));
+		Sheet sheet = wb.getSheet(0);
+		
+		String expected ="100" ;//期望值
+		String truevalue=sheet.getCell(7,0).getContents();//真实值
+		assertEquals(expected,truevalue);//断言方法
+		
+		String expected1 ="股票名称" ;//期望值
+		String truevalue1=sheet.getCell(0,1).getContents();//真实值
+		assertEquals(expected1,truevalue1);//断言方法
+		
+		String expected2 ="股票代码" ;//期望值
+		String truevalue2=sheet.getCell(1,1).getContents();//真实值
+		assertEquals(expected2,truevalue2);//断言方法
+		
+		String expected3 ="交易日期" ;//期望值
+		String truevalue3=sheet.getCell(2,1).getContents();//真实值
+		assertEquals(expected3,truevalue3);//断言方法
+		
+		String expected4 ="交易类型" ;//期望值
+		String truevalue4=sheet.getCell(3,1).getContents();//真实值
+		assertEquals(expected4,truevalue4);//断言方法
+		
+		String expected5 ="成交价";//期望值
+		String truevalue5=sheet.getCell(4,1).getContents();//真实值
+		assertEquals(expected5,truevalue5);//断言方法
+		
+		String expected6 ="成交数量";//期望值
+		String truevalue6=sheet.getCell(5,1).getContents();//真实值
+		assertEquals(expected6,truevalue6);//断言方法
+		
+		String expected7 ="交易所";//期望值
+		String truevalue7=sheet.getCell(6,1).getContents();//真实值
+		assertEquals(expected7,truevalue7);//断言方法
+		
+		//删除文件 恢复环境
+		File file = new File(path);
+		if (file.isFile() && file.exists()) {  
+	        file.delete();  
+	        }
 	}
 
+/**
+ * 修改用户初始资金
+ * @throws IOException 
+ * @throws FileNotFoundException 
+ * @throws BiffException 
+ * @throws WriteException 
+ * @throws RowsExceededException 
+ */
+	@Test
+	public void DataDealer_changefundTest() throws BiffException, FileNotFoundException, IOException, RowsExceededException, WriteException{
+		
+		
+		String newfund = "123456";//构造一个初始资金
+		String path = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTest.xls";//测试交易记录路径
+		
+		Workbook wb = Workbook.getWorkbook(new FileInputStream(path));
+		Sheet sheet = wb.getSheet(0);
+		String fund = sheet.getCell(7, 0).getContents();//把原先的资金先保存一下
+		
+		//调用方法
+		DataDealer dd = new DataDealer(path, -1);
+		dd.changefund(newfund);
+		
+		Workbook wb2 = Workbook.getWorkbook(new FileInputStream(path));
+		Sheet sheet2 = wb2.getSheet(0);
+		String expected =newfund;//期望值
+		String truevalue=sheet2.getCell(7,0).getContents();//真实值
+		assertEquals(expected,truevalue);//断言方法
+		
+		//恢复excel
+		WritableWorkbook wwb = Workbook.createWorkbook(new File(path), wb);
+		WritableSheet writesheet = wwb.getSheet(0);
+		Label label = new Label(7,0,fund);
+		writesheet.addCell(label);
+		
+		wwb.write();
+		wwb.close();
+		
+	}
+	
+	/**
+	 * 测试DataDealer类的tablemaker方法
+	 * @throws IOException 
+	 * @throws BiffException 
+	 */
+   @Test
+   public void DataDealer_tablemakerTest() throws BiffException, IOException{
+	   
+	   String path = "C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\tradeTest.xls";
+	   DataDealer  dd = new DataDealer(path,-1);
+	   Table table =tableinfoTestcreat();
+	   dd.tablemaker(table);
+	   
+	   Workbook wb = Workbook.getWorkbook(new FileInputStream(path));
+	   Sheet sheet = wb.getSheet(0);
+	  
+	   for(int loop = 1; loop<sheet.getRows()-1;loop++){
+		   for(int column = 0; column < sheet.getColumns();column++){
+			   
+			    String expected =sheet.getCell(column, loop).getContents();//期望值
+				String truevalue=table.getItem(loop-1).getText(column);//真实值
+				assertEquals(expected,truevalue);//断言方法
+		   }
+	   }
+   }
 
 }

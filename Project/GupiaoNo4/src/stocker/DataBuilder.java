@@ -1,20 +1,14 @@
 package stocker;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 
 
-import java.io.ObjectInputStream.GetField;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
-import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -24,78 +18,30 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
+
 
 
 
 public class DataBuilder {
 
-	public static void tablemaker(String path_file, Table table)  throws BiffException, IOException{
-		// TODO Auto-generated method stub
-		// 1、构造excel文件输入流对象
-
-		InputStream is = new FileInputStream(path_file);
-
-		// 2、声明工作簿对象
-		Workbook rwb = Workbook.getWorkbook(is);
-		// 3、获得工作簿的个数,对应于一个excel中的工作表个数
-		rwb.getNumberOfSheets();
-
-		Sheet oFirstSheet = rwb.getSheet(0);// 使用索引形式获取第一个工作表，也可以使用rwb.getSheet(sheetName);其中sheetName表示的是工作表的名称
-		// System.out.println("工作表名称：" + oFirstSheet.getName());
-		int rows = oFirstSheet.getRows();// 获取工作表中的总行数
-		int columns = oFirstSheet.getColumns();// 获取工作表中的总列数
-		String[] itemdata = new String[columns];
-
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				Cell oCell = oFirstSheet.getCell(j, i);// 需要注意的是这里的getCell方法的参数，第一个是指定第几列，第二个参数才是指定第几行
-				// System.out.println(oCell.getContents()+"\r\n");
-				itemdata[j] = oCell.getContents();
-			}
-			TableItem tableItem = new TableItem(table,SWT.NONE);
-			tableItem.setText(itemdata);
-			//tableItem.setBackground(homepage.bcolor);
-		}
-
-	}
-	
 
 
-	public static void userinfchanger(String text_fund, String path_userinfo) throws IOException, RowsExceededException, WriteException, BiffException {
-
-		// 1、创建工作簿(WritableWorkbook)对象，打开excel文件，若文件不存在，则创建文件
-		/*Workbook workBook = Workbook.getWorkbook(new FileInputStream(path_userinfo));
-		WritableWorkbook writeBook = Workbook.createWorkbook(new File(path_userinfo),workBook);
 
 
-		WritableSheet sheet = writeBook.getSheet(0);
-		WritableCell cell = sheet.getWritableCell(0,0); 
-		CellFormat cf = cell.getCellFormat();
-		Label label = new Label(0,1,text_fund);
-		label.setCellFormat(cf);
-		sheet.addCell(label);*/
-		
-		Workbook workBook = Workbook.getWorkbook(new FileInputStream(path_userinfo));
-		WritableWorkbook writeBook = Workbook.createWorkbook(new File(path_userinfo),workBook);
-		WritableSheet sheet = writeBook.getSheet(0);
-		
-		Label label1 = new Label(0,1,text_fund);
-		sheet.addCell(label1);
-		
-		
-		// 4、打开流，开始写文件
-		writeBook.write();
-		// 5、关闭流
-		writeBook.close();
-	}
 
 	
 	
-	//更新交易记录excel表
-	public static void addtrade(String path_trade, Trade trade) throws IOException, RowsExceededException, WriteException, BiffException{
+	/**
+	 * 更新交易记录excel表
+	 * @param path_trade
+	 * @param trade
+	 * @return
+	 * @throws IOException
+	 * @throws RowsExceededException
+	 * @throws WriteException
+	 * @throws BiffException
+	 */
+	public  boolean addtrade(String path_trade, Trade trade) throws IOException, RowsExceededException, WriteException, BiffException{
 		// TODO Auto-generated method stub
 		
 		Workbook workBook = Workbook.getWorkbook(new FileInputStream(path_trade));
@@ -103,128 +49,156 @@ public class DataBuilder {
 		WritableSheet sheet = writeBook.getSheet(0);
 		int rows = sheet.getRows();
 
-//		
-//		WritableCell cell_price = sheet.getWritableCell(3,1); 
-//		CellFormat cf_price = cell_price.getCellFormat();
-//		
-//		WritableCell cell_rate = sheet.getWritableCell(4,1); 
-//		CellFormat cf_rate = cell_rate.getCellFormat();
-		
-		Label label1 = new Label(0,rows,trade.get_name());
-		sheet.addCell(label1);//股票名称
-		
-		Label label2 = new Label(1,rows,trade.get_code());
-		sheet.addCell(label2);//股票代码
-		
-		Label label3 = new Label(2,rows,trade.get_date());
-		sheet.addCell(label3);//日期
-		
-		Label label4 = new Label(3,rows,trade.get_trade_stytle());
-		sheet.addCell(label4);//类型
-		
-		Label label5 = new Label(4,rows,Double.toString(trade.get_price()));
-		//label5.setCellFormat(cf_price);
-		sheet.addCell(label5);//价格
-		
-		Label label6 = new Label(5,rows,Integer.toString(trade.get_num()));
-		//label6.setCellFormat(cf_rate);
-		sheet.addCell(label6);//数量
-		
-		Label label7 = new Label(6,rows,trade.get_place());
-		sheet.addCell(label7);//交易所
-		
-		
-		
-		// 4、打开流，开始写文件
-		writeBook.write();
-		// 5、关闭流
-		writeBook.close();
-		
-	}
 
-
-	
-	//更新持仓excel表
-	public static void Excel_chicang_update(List<Stocks> stocksList,
-			String path_chicang) throws Exception{
-		// TODO Auto-generated method stub
-		
-		Workbook workBook = Workbook.getWorkbook(new FileInputStream(path_chicang));
-		WritableWorkbook writeBook = Workbook.createWorkbook(new File(path_chicang),workBook);
-		WritableSheet sheet = writeBook.getSheet(0);
-		int stocksnum = stocksList.size();
-	
-		NumberFormat nf = NumberFormat.getPercentInstance();
-		nf.setMinimumFractionDigits(2);//设置保留小数位
-
-		 String[] information = new String[31];
-		for(int i = 1;i<stocksnum+1;i++){
-			
-			try {
-				 
-				information = Internet.share.Internet.getSharedata(stocksList.get(i).getplace(),
-					stocksList.get(i).getSocketcode()); 
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				JOptionPane.showMessageDialog(null, "请检查网络", "异常", JOptionPane.ERROR_MESSAGE);
+		//找出交易日期对应的一行 （该日期所有行中的最后一行）
+		int excelindex;
+		String[] date_trade = trade.get_date().split("/");
+		int loop = 2;
+		for(; loop <rows;++loop){
+			String[] date_excel = sheet.getCell(2,loop).getContents().split("/");
+			if (Integer.parseInt(date_trade[0]) > Integer.parseInt(date_excel[0])) {
+				continue;
+			} else {
+				if (Integer.parseInt(date_trade[1]) > Integer.parseInt(date_excel[1])) {
+					continue;
+				} else {
+					if (Integer.parseInt(date_trade[2]) >= Integer.parseInt(date_excel[2])) {
+						continue;
+					} else break;
+						
+				}
 			}
-			  //抓取该股票信息
-			   
-			     
-				
-				Label label1 = new Label(0,i,stocksList.get(i).getSocketname());
-				sheet.addCell(label1);//股票名称
-				Label label2 = new Label(1,i,stocksList.get(i).getSocketcode());
-				sheet.addCell(label2);//股票代码
-				Label label3 = new Label(2,i,stocksList.get(i).getplace());
-				sheet.addCell(label3);//交易所
-				
 
-
-				Label label4 = new Label(3,i,information[3]);
-				sheet.addCell(label4);//当前价
-				
-				double nowprice = Double.parseDouble(information[3]);//当前价
-				double yesterprice = Double.parseDouble(information[2]);//昨收价
-				double rateprice;
-				if(nowprice==yesterprice){rateprice = 0.00;}
-				else{rateprice = (nowprice-yesterprice)/yesterprice;}
-				
-				Label label5 = new Label(4,i,nf.format(rateprice));
-				sheet.addCell(label5);//涨跌
-				
-				Label label6 = new Label(5,i,Integer.toString(stocksList.get(i).getNum()));
-				sheet.addCell(label6);//持有量
-				
-				double sumprice = nowprice*stocksList.get(i).getNum();
-				Label label7 = new Label(6,i,Double.toString(sumprice));
-				sheet.addCell(label7);//持有市值
-				
-				Label label8 = new Label(7,i,Double.toString(stocksList.get(i).getcostprice()));
-				sheet.addCell(label8);//成本价
-				
-				Label label9 = new Label(8,i,"0.00(0.00%)");
-				sheet.addCell(label9);//浮动盈亏
-				
-				double costprice = stocksList.get(i).getcostprice()*stocksList.get(i).getNum();//持仓成本（无手续费）
-				double returnprice = sumprice - costprice;//盈亏
-				double returnrate = returnprice/costprice;//盈亏率
-				Label label10 = new Label(8,i,Double.toString(returnprice)+"("+nf.format(returnrate)+")");
-				sheet.addCell(label10);//浮动盈亏
+			}
+		
+			excelindex = loop;
 			
+		
+		//判断卖出数量是否大于该日期之前的总买入数量  补仓数量是否大于该日期之前的总可补数量
+			if(trade.get_trade_stytle().equals("卖出")||trade.get_trade_stytle().equals("补仓")){
+				int num = 0;
+				 int  TAG = -1;
+				for(int i = 2; i <excelindex;i++){
+				if(trade.get_trade_stytle().equals("卖出")&&sheet.getCell(0, i).getContents().equals(trade.get_name())
+						&&(sheet.getCell(3, i).getContents().equals("买入")||sheet.getCell(3, i).getContents().equals("卖出"))
+						&&sheet.getCell(1, i).equals(trade.get_code())
+						&&sheet.getCell(6, i).equals(trade.get_place())){
+					num+=Integer.parseInt((sheet.getCell(5, i).getContents()));
+					TAG = 1;
+				}
+				if(trade.get_trade_stytle().equals("补仓")&&sheet.getCell(0, i).getContents().equals(trade.get_name())
+						&&(sheet.getCell(3, i).getContents().equals("卖空")||sheet.getCell(3, i).getContents().equals("补仓"))
+						&&sheet.getCell(1, i).equals(trade.get_code())
+						&&sheet.getCell(6, i).equals(trade.get_place())){
+					num+=Integer.parseInt((sheet.getCell(5, i).getContents()));
+					TAG = 1;
+				}
+				
+			  }
+				if (TAG == 1) {
+					if (Math.abs(trade.get_num()) > Math.abs(num)) {
+
+						writeBook.write();
+						writeBook.close();
+						return false;
+					}
+					
+				}
+			}
+		
+		
+		//如果是最后一行的下一行
+		if(excelindex==rows){
+			Label label1 = new Label(0,excelindex,trade.get_name());
+			sheet.addCell(label1);//股票名称
+			
+			Label label2 = new Label(1,excelindex,trade.get_code());
+			sheet.addCell(label2);//股票代码
+			
+			Label label3 = new Label(2,excelindex,trade.get_date());
+			sheet.addCell(label3);//日期
+			
+			Label label4 = new Label(3,excelindex,trade.get_trade_stytle());
+			sheet.addCell(label4);//类型
+			
+			Label label5 = new Label(4,excelindex,Double.toString(trade.get_price()));
+			//label5.setCellFormat(cf_price);
+			sheet.addCell(label5);//价格
+			
+			Label label6 = new Label(5,excelindex,Integer.toString(trade.get_num()));
+			//label6.setCellFormat(cf_rate);
+			sheet.addCell(label6);//数量
+			
+			Label label7 = new Label(6,excelindex,trade.get_place());
+		    sheet.addCell(label7);//交易所
 		}
 		
-		// 4、打开流，开始写文件
+		if (excelindex < rows){
+			for (int excelLoop = excelindex; excelLoop < rows + 1; excelLoop++) {
+				
+				Trade tradetemp = null;
+				// 保存当前行
+				//仅当该行不超过最后一行
+				if(excelLoop<rows){
+					tradetemp = new Trade(sheet.getCell(0, excelLoop).getContents(), 
+						sheet.getCell(1, excelLoop).getContents(), 
+						sheet.getCell(2, excelLoop).getContents(), 
+						sheet.getCell(3, excelLoop).getContents(), 
+						Double.parseDouble(sheet.getCell(4,excelLoop).getContents()), 
+						Integer.parseInt(sheet.getCell(5, excelLoop).getContents()), 
+						sheet.getCell(6,excelLoop).getContents());
+				}
+				
+
+				Label label1 = new Label(0, excelLoop, trade.get_name());
+				sheet.addCell(label1);// 股票名称
+
+				Label label2 = new Label(1, excelLoop, trade.get_code());
+				sheet.addCell(label2);// 股票代码
+
+				Label label3 = new Label(2, excelLoop, trade.get_date());
+				sheet.addCell(label3);// 日期
+
+				Label label4 = new Label(3, excelLoop, trade.get_trade_stytle());
+				sheet.addCell(label4);// 类型
+
+				Label label5 = new Label(4, excelLoop, Double.toString(trade
+						.get_price()));
+				// label5.setCellFormat(cf_price);
+				sheet.addCell(label5);// 价格
+
+				Label label6 = new Label(5, excelLoop, Integer.toString(trade
+						.get_num()));
+				// label6.setCellFormat(cf_rate);
+				sheet.addCell(label6);// 数量
+
+				Label label7 = new Label(6, excelLoop, trade.get_place());
+				sheet.addCell(label7);// 交易所
+
+				trade = tradetemp;
+
+			}
+
+		}
+		
+		
 		writeBook.write();
-		// 5、关闭流
 		writeBook.close();
+		
+		return true;
+		
 	}
 
 
 
-	//把交易记录读成tradelist并返回
-	public static List<Trade> tradelistmaker(String path_trade) throws BiffException, IOException {
+	/**
+	 * 把交易记录读成tradelist并返回
+	 * @param path_trade
+	 * @return
+	 * @throws BiffException
+	 * @throws IOException
+	 */
+	public List<Trade> tradelistmaker(String path_trade) throws BiffException, IOException {
 		// TODO Auto-generated method stub
 		InputStream is = new FileInputStream(path_trade);
 
@@ -235,7 +209,7 @@ public class DataBuilder {
 		int rows = sheet.getRows();
 		List<Trade> tradelist = new ArrayList<Trade>();
 		
-		for(int i=1; i<rows; i++){
+		for(int i=2; i<rows; i++){
 			Trade trade = new Trade();//trade的定义必须放进循环里面
 			trade.set_name(sheet.getCell(0, i).getContents());
 			trade.set_code(sheet.getCell(1, i).getContents());
@@ -252,66 +226,14 @@ public class DataBuilder {
 		
 	}
 
-/*
-   //传入tradelist返回交易stocktradelist
-	public static List<StockTrade> stockreturnratemaker(List<Trade> tradelist) {
-		
-		if(tradelist.isEmpty()){return null;}
-		
-		List<StockTrade> stocktradelist = new ArrayList<StockTrade>();
-		
 
-		int biaoji = 0;		
-		for (int i = 0; i < tradelist.size(); i++) {
-
-			for (int j = 0; j < stocktradelist.size(); j++) {
-				
-				if (tradelist.get(i).get_name().equals(stocktradelist.get(j).getname())
-						& tradelist.get(i).get_code().equals(stocktradelist.get(j).getcode())) {
-
-					biaoji = 1;
-					
-					//如果是买入记录
-					if(tradelist.get(i).get_trade_stytle().equals("买入")
-							||tradelist.get(i).get_trade_stytle().equals("卖空")){
-						
-						stocktradelist.get(j).setcostprice(tradelist.get(i).get_price());
-						stocktradelist.get(j).setnum_buy(tradelist.get(i).get_num());
-						stocktradelist.get(j).adddate(tradelist.get(j).get_date());
-						stocktradelist.get(j).addrate();
-					}
-					else{
-						stocktradelist.get(j).setsell(tradelist.get(i).get_num(), tradelist.get(i).get_price());
-						stocktradelist.get(j).adddate(tradelist.get(i).get_date());
-						stocktradelist.get(j).addrate();
-					}
-					
-					
-					break;
-					
-				}
-				
-				biaoji =0;
-			}
-			
-			if(biaoji==0){
-				
-			    StockTrade stocktrade = new StockTrade(tradelist.get(i).get_name(),tradelist.get(i).get_code()
-			    		,tradelist.get(i).get_price(),tradelist.get(i).get_num(),tradelist.get(i).get_date());
-				
-				stocktrade.addrate();
-				stocktradelist.add(stocktrade);
-			}
-
-		}
-		return stocktradelist;
-		
-	}
-
-*/
+	/**
+	 * 计算股票收益率
+	 * @param tradelist
+	 * @return
+	 */
 	
-	
-	public static Sumreturnrate Sumreturnratemaker(List<Trade> tradelist){
+	public  Sumreturnrate Sumreturnratemaker(List<Trade> tradelist){
 		
 		Sumreturnrate sumreturnrate = new Sumreturnrate();
 		
@@ -334,7 +256,7 @@ public class DataBuilder {
 					||tradelist.get(loop).get_trade_stytle().equals("卖空")){
 				
 				sumreturnrate.addSumprice_out(tradelist.get(loop).get_price(),
-						tradelist.get(loop).get_num());
+						-tradelist.get(loop).get_num());
 				ramainstockdealer(sumreturnrate,loop,tradelist);
 				sumreturnrate.addrate(tradelist.get(loop).get_date());
 			}
@@ -343,24 +265,31 @@ public class DataBuilder {
 		
 	}
 
-public static  Sumreturnrate ramainstockdealer(Sumreturnrate sumreturnrate, int loop, List<Trade> tradelist) {
+public   Sumreturnrate ramainstockdealer(Sumreturnrate sumreturnrate, int loop, List<Trade> tradelist) {
 	// TODO Auto-generated method stub
 	
-	if(sumreturnrate.remainstocklist.isEmpty()){
-		
-		Remainstock remainstock = new Remainstock(tradelist.get(loop).get_name(),tradelist.get(loop).get_code(),
-				tradelist.get(loop).get_place(),tradelist.get(loop).get_num());
-		sumreturnrate.remainstocklist.add(remainstock);
-		
-		return sumreturnrate;
-		
-	}
+
 	
 	int TAG = 0;//标记是否找到相同股票  0没有找到 1找到
 	for(int remainloop =0; remainloop<sumreturnrate.remainstocklist.size();remainloop++){
-		if(sumreturnrate.remainstocklist.get(remainloop).getCode().equals(tradelist.get(loop).get_code())
-				&&sumreturnrate.remainstocklist.get(remainloop).getPlace().equals(tradelist.get(loop).get_place())){
-			     int sumnum = sumreturnrate.remainstocklist.get(remainloop).getNumber()+tradelist.get(loop).get_num();
+		
+		
+		if((tradelist.get(loop).get_trade_stytle().equals("买入")||tradelist.get(loop).get_trade_stytle().equals("买入"))
+				&&sumreturnrate.remainstocklist.get(remainloop).getCode().equals(tradelist.get(loop).get_code())
+				&&sumreturnrate.remainstocklist.get(remainloop).getPlace().equals(tradelist.get(loop).get_place())
+				&&((sumreturnrate.remainstocklist.get(remainloop).getNumber())^(tradelist.get(loop).get_num()))>0){
+			    
+			    int sumnum = sumreturnrate.remainstocklist.get(remainloop).getNumber()+tradelist.get(loop).get_num();
+			     sumreturnrate.remainstocklist.get(remainloop).setNumber(sumnum);
+			     TAG = 1;
+			     break;
+		       }
+		else if((tradelist.get(loop).get_trade_stytle().equals("卖出")||tradelist.get(loop).get_trade_stytle().equals("补仓"))
+				&&sumreturnrate.remainstocklist.get(remainloop).getCode().equals(tradelist.get(loop).get_code())
+				&&sumreturnrate.remainstocklist.get(remainloop).getPlace().equals(tradelist.get(loop).get_place())
+				&&((sumreturnrate.remainstocklist.get(remainloop).getNumber())^(tradelist.get(loop).get_num()))<0){
+			    
+			    int sumnum = sumreturnrate.remainstocklist.get(remainloop).getNumber()+tradelist.get(loop).get_num();
 			     sumreturnrate.remainstocklist.get(remainloop).setNumber(sumnum);
 			     TAG = 1;
 			     break;
@@ -377,30 +306,44 @@ public static  Sumreturnrate ramainstockdealer(Sumreturnrate sumreturnrate, int 
 	return sumreturnrate;
 }
 
-
-	public static List<HistoryStockown> HistoryStockownmaker(List<Trade> tradelist) {
+/**
+ * 计算持股构成
+ * @param tradelist
+ * @return
+ */
+	public  List<HistoryStockown> HistoryStockownmaker(List<Trade> tradelist) {
 
 		List<HistoryStockown> HSOL = new ArrayList<HistoryStockown>();//定义一个历史股票类链表
 		HistoryStockown HSO ;//历史股票类
 		
 		//遍历每条记录
 		for (int tradeloop = 0; tradeloop < tradelist.size(); tradeloop++) {
-
-			//只选择买入或者卖出记录
-			if (tradelist.get(tradeloop).get_trade_stytle().equals("卖空")
-					|| tradelist.get(tradeloop).get_trade_stytle().equals("补仓")) {
-				continue;
-			}
-			
+		
 			int TAG = 0;//标记是否找到相同股票  0表示没有找到 1表示找到
 			for(int stockownloop =0; stockownloop < HSOL.size();stockownloop++){
-				if(tradelist.get(tradeloop).get_name().equals(HSOL.get(stockownloop).name)
+				if( (tradelist.get(tradeloop).get_trade_stytle().equals("卖空")|| tradelist.get(tradeloop).get_trade_stytle().equals("补仓"))
+						&&tradelist.get(tradeloop).get_name().equals(HSOL.get(stockownloop).name)
 				  &&tradelist.get(tradeloop).get_code().equals(HSOL.get(stockownloop).code)
-				  &&tradelist.get(tradeloop).get_place().equals(HSOL.get(stockownloop).place)){
+				  &&tradelist.get(tradeloop).get_place().equals(HSOL.get(stockownloop).place)
+				 &&HSOL.get(stockownloop).number.get(HSOL.get(stockownloop).number.size()-1)<=0){
 					
 				HSOL.get(stockownloop).addnumber_date(tradelist.get(tradeloop).get_num(), tradelist.get(tradeloop).get_date());
 				TAG = 1;
 				break;
+				}
+				else if( (tradelist.get(tradeloop).get_trade_stytle().equals("买入")|| tradelist.get(tradeloop).get_trade_stytle().equals("卖出"))
+						&&tradelist.get(tradeloop).get_name().equals(HSOL.get(stockownloop).name)
+				  &&tradelist.get(tradeloop).get_code().equals(HSOL.get(stockownloop).code)
+				  &&tradelist.get(tradeloop).get_place().equals(HSOL.get(stockownloop).place)
+				 &&HSOL.get(stockownloop).number.get(HSOL.get(stockownloop).number.size()-1)>=0){
+					
+				HSOL.get(stockownloop).addnumber_date(tradelist.get(tradeloop).get_num(), tradelist.get(tradeloop).get_date());
+				TAG = 1;
+				break;
+				}
+				
+				if(TAG == 0){
+					HSOL.get(stockownloop).number_date(HSOL.get(stockownloop).number.get(HSOL.get(stockownloop).number.size()-1),tradelist.get(tradeloop).get_date());
 				}
 			}
 			if(TAG == 0){
@@ -409,8 +352,6 @@ public static  Sumreturnrate ramainstockdealer(Sumreturnrate sumreturnrate, int 
 				HSO.addnumber_date(tradelist.get(tradeloop).get_num(), tradelist.get(tradeloop).get_date());
 				HSOL.add(HSO);
 			}
-			
-
 		}
 
 		return HSOL;

@@ -4,7 +4,7 @@ public class Remainstock {
 	private String name;//股票名称
 	private String code;//股票代码
 	private String place;//交易所
-	private int number;//买入剩余或者补仓有多的股票数量
+	private int number;//买入剩余或者卖空有多的股票数量
 	
 	public  Remainstock(String name,String code,String place,int number){
 		this.name = name;
@@ -17,7 +17,7 @@ public class Remainstock {
 		return number;
 	}
 	public void setNumber(int number) {
-		this.number = number;
+		this.number = this.number+number;
 	}
 	public String getName() {
 		return name;

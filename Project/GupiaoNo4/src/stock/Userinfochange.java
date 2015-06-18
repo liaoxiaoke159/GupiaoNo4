@@ -1,14 +1,5 @@
 package stock;
-
-
-
-import java.io.IOException;
-
 import javax.swing.JOptionPane;
-
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
-
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
@@ -20,16 +11,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-
-import stocker.DataBuilder;
-import stocker.Importer;
+import org.eclipse.swt.graphics.Rectangle;
+import stocker.DataDealer;
 
 public class Userinfochange {
 
 	protected Shell shell;
 	private Text text_fund;
+	private int tabitemindex;
 
-  //判断字符串是否为数字
+  public Userinfochange(int selectionIndex) {
+		// TODO Auto-generated constructor stub
+	  this.tabitemindex = selectionIndex;
+	}
+
+
+
+	//判断字符串是否为数字
 	public static boolean isNumeric(String str) {
 		for (int i = str.length(); --i >= 0;) {
 			if (!Character.isDigit(str.charAt(i))) {
@@ -72,9 +70,15 @@ public class Userinfochange {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
+		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chaogushenqi.png"));
 		shell.setSize(458, 80);
 		shell.setText("\u7528\u6237\u8D44\u91D1\u4FEE\u6539");
+		
+		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
 		
 		Composite composite = new Composite(shell, SWT.BORDER);
 		composite.setBounds(0, 0, 442, 48);
@@ -96,16 +100,18 @@ public class Userinfochange {
 				else{
 					//修改值大于初始资金才允许修改
 					if(Double.parseDouble(text_fund.getText()) >=
-							Double.parseDouble( homepage.get_table_userinfo().getItem(1).getText(0))){
+							Double.parseDouble( homepage.table_userinfos.get(tabitemindex).getItem(1).getText(0))){
 						
-						double fundown = Double.parseDouble(homepage.get_table_userinfo().getItem(1).getText(1));//获得可用资金
-						double fund =Double.parseDouble(homepage.get_table_userinfo().getItem(1).getText(0));//获得初始资金
+						DataDealer datadealer = new DataDealer(homepage.path_trade.get(tabitemindex),tabitemindex);
+						datadealer.changefund(text_fund.getText());
+						double fund =Double.parseDouble(homepage.table_userinfos.get(tabitemindex).getItem(1).getText(0));//获得初始资金
+						double fundown = Double.parseDouble(homepage.table_userinfos.get(tabitemindex).getItem(1).getText(1));//获得可用资金
+						
 						double newfundown = fundown + ( Double.parseDouble(text_fund.getText())-fund);//重新计算 可用资金 = 原来可用资金+（输入的初始资金-原来的初始资金）
 						
-						homepage.table_userinfo.getItem(1).setText(1, Double.toString(newfundown));
-						homepage.get_table_userinfo().getItem(1).setText(0, text_fund.getText());
+						homepage.table_userinfos.get(tabitemindex).getItem(1).setText(1, Double.toString(newfundown));
+						homepage.table_userinfos.get(tabitemindex).getItem(1).setText(0, text_fund.getText());
 						
-						Importer.userinfo_table_change(homepage.table_userinfo,homepage.stkl.stockslist);
 					
 						shell.close();
 					}
@@ -113,7 +119,7 @@ public class Userinfochange {
 						MessageBox messagebox = new MessageBox(shell, SWT.OK);
 			            messagebox.setText("额..");
 			            messagebox.setMessage("资金太少啦！");
-			            int val = messagebox.open();
+			            messagebox.open();
 						
 					}
 					
@@ -127,7 +133,7 @@ public class Userinfochange {
 			
 			
 		});
-		btnNewButton.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\asggh.png"));
+		btnNewButton.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\\u786E\u8BA4.png"));
 		btnNewButton.setBounds(398, 3, 30,30 );
 
 	}

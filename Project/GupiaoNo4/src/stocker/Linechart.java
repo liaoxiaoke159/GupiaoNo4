@@ -38,7 +38,7 @@ public class Linechart {
     }
     private static XYDataset createDataset(Sumreturnrate s) {  //这个数据集有点多，但都不难理解
         TimeSeriesCollection timeseriescollection = new TimeSeriesCollection();
-        TimeSeries time=new TimeSeries("收益率",org.jfree.data.time.Day.class);
+		TimeSeries time=new TimeSeries("收益率",org.jfree.data.time.Day.class);
         for(int i=0;i<s.date.size();i++){
         	
         	String day=s.date.get(i);
@@ -56,13 +56,14 @@ public class Linechart {
 
      public void getChartPanel(String path){
 	    	try {
-				ChartUtilities.saveChartAsPNG(new File(path+"\\shouyilv.png"), jfreechart, 700, 400);
+				ChartUtilities.saveChartAsPNG(new File(path+"\\shouyilv.png"), jfreechart, 700, 350);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 	    		         
 	    }
+     
 }
             
 

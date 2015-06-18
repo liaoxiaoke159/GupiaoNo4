@@ -21,7 +21,7 @@ public class Stocks {
 		return this.code;
 	}
 	public void setNum(int x){
-		this.num=x;
+		this.num+=x;
 	}
 	public int getNum(){
 		return this.num;
@@ -32,8 +32,8 @@ public class Stocks {
 	public double getcostprice(){
 		return this.costprice;
 	}
-	public void setplace(String place1){
-		this.place = place1;
+	public void setplace(String place){
+		this.place = place;
 	}
 	public String getplace(){
 		return this.place;

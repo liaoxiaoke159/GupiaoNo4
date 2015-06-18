@@ -1,10 +1,13 @@
 package stock;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import jxl.read.biff.BiffException;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.SWT;
@@ -17,6 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
 import stocker.DataBuilder;
+import stocker.DataDealer;
 
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -28,22 +32,28 @@ public class Dia_trade {
 
 	protected Shell shlSw;
 	public static Table table_trade;
-	private String path_file=homepage.get_path_trade();
+	//private String path_file=homepage.get_path_trade();
 	protected int row;
 	protected int column;
+	private int tabitemindex;
+
+	public Dia_trade(int selectionIndex) {
+		// TODO Auto-generated constructor stub
+		this.tabitemindex = selectionIndex;
+	}
 
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		try {
-			Dia_trade window = new Dia_trade();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			Dia_trade window = new Dia_trade();
+//			window.open();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * Open the window.
@@ -65,7 +75,9 @@ public class Dia_trade {
 	private void tablemaker() {
 		// TODO Auto-generated method stub
 		try {
-			DataBuilder.tablemaker(path_file, table_trade);
+			DataDealer dd =new DataDealer(homepage.path_trade.get(tabitemindex),-1);
+			
+			  dd.tablemaker(table_trade);
 		} catch (BiffException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,8 +92,8 @@ public class Dia_trade {
 	 */
 	protected void createContents() {
 		shlSw = new Shell();
-		shlSw.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
-		shlSw.setSize(596, 455);
+		shlSw.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chaogushenqi.png"));
+		shlSw.setSize(693, 455);
 		shlSw.setText("\u4EA4\u6613\u8BB0\u5F55");
 		
 		table_trade = new Table(shlSw, SWT.FULL_SELECTION);
@@ -106,12 +118,17 @@ public class Dia_trade {
 					 i++;	 
 				 }
 				 
-				Dia_tradechange window = new Dia_tradechange(table_trade.getItem(row).getText(column)
-						,row,column);
+				 if(row != 0 && column!=0 && column!=1){
+					 
+					 Dia_tradechange window = new Dia_tradechange(table_trade,
+						row,column,tabitemindex);
 				                window.open();
+				 }
+				 
 			}
+			
 		});
-		table_trade.setBounds(0, 0, 579, 417);
+		table_trade.setBounds(0, 0, 677, 417);
 		table_trade.setHeaderVisible(false);
 		table_trade.setLinesVisible(false);
 		
@@ -138,6 +155,10 @@ public class Dia_trade {
 		TableColumn tableColumn_5 = new TableColumn(table_trade, SWT.CENTER);
 		tableColumn_5.setWidth(100);
 		tableColumn_5.setText("ÊýÁ¿");
+		
+		TableColumn tblclmnNewColumn = new TableColumn(table_trade, SWT.NONE);
+		tblclmnNewColumn.setWidth(100);
+		tblclmnNewColumn.setText("New Column");
 		
 
 		

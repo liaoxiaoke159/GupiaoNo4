@@ -51,7 +51,7 @@ public class Messagedialo {
 	 */
 	protected void createContents() {
 		shell = new Shell(shell,SWT.SHELL_TRIM|SWT.APPLICATION_MODAL);
-		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\\u641C\u7D22\u5305\\chaogushenqi.png"));
+		shell.setImage(SWTResourceManager.getImage("C:\\Users\\Administrator\\Desktop\\GupiaoNo4\\Project\\GupiaoNo4\\data\\chaogushenqi.png"));
 		shell.setSize(388, 277);
 		shell.setText("下单成功");
 		
